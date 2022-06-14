@@ -8,7 +8,10 @@ This package provides an easy and reusable interface to build prompts for large 
 ## Install
 
 ```bash
-pip install prompt_refresher
+git clone https://github.com/amasandMS/Prompt-Refresher.git
+cd Prompt-Refresher
+python -m build
+pip install .\dist\prompt_refresher-ver.x.x.x-py3-none-any.whl
 ```
 
 ## Simple Demo
