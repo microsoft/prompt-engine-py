@@ -14,7 +14,7 @@ class PromptEngineConfig:
         self.stopSequence = stopSequence
 
 
-class PromptEngine:
+class PromptEngine(object):
     """
     Prompt Engine provides a reusable interface for the developer to construct prompts for large scale language model inference
     """

@@ -77,3 +77,22 @@ def test_pass_buildPrompt():
     promptEngine = PromptEngine(config, description, dialog=dialog)
     promptEngine.buildContext()
     assert promptEngine.buildPrompt("Hello") == "## Hi\nprint('Hi')\n## Hello\n"
+
+def test_pass_overriding_insert_examples():
+    config = PromptEngineConfig()
+    description = ""
+    examples = [Interaction("Hi", "print('Hi')")]
+
+    class PromptEngineOverloaded(PromptEngine):
+        def _insert_examples(self):
+            """
+            Inserts the examples into the context
+            """
+            if (self.examples != []):
+                for example in self.examples:
+                    self.context += self.config.startSequence + "This is an example: " + example.naturalLanguage + self.config.stopSequence
+                    self.context += self.config.newlineOperator
+                    self.context += example.code + self.config.newlineOperator
+
+    promptEngine = PromptEngineOverloaded(config, description, examples=examples)
+    assert promptEngine.buildContext() == "##This is an example: Hi\nprint('Hi')\n"
