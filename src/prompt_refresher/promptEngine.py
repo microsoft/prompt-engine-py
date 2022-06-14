@@ -81,9 +81,9 @@ class PromptEngine:
         Truncates the prompt to the max_tokens in the modelConfig
         """
         if (self.config.modelConfig != None and self.__assert_token_limit(prompt, self.config.modelConfig.max_tokens)):
-                prompt = prompt.split()[:self.config.modelConfig.max_tokens]
-                prompt = " ".join(prompt)
-                return prompt
+            prompt = prompt.split()[:self.config.modelConfig.max_tokens]
+            prompt = " ".join(prompt)
+            return prompt
         else:
             return prompt
     
