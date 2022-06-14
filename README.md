@@ -64,6 +64,7 @@ print('Hi')
 print('Bye')
 ```
 
+More examples can be found in the [Examples](https://github.com/amasandMS/Prompt-Refresher/tree/main/examples) folder.
 
 ## Prompt Engineering and Context Files
 
