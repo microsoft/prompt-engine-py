@@ -13,7 +13,7 @@ class PromptEngineConfig:
 
 
 class PromptEngine:
-    def __init__(self, config: PromptEngineConfig, description: str, examples: list = None, dialog: list = None):
+    def __init__(self, config: PromptEngineConfig, description: str, examples: list = [], dialog: list = []):
         self.config = config
         self.description = description
         self.examples = examples
@@ -31,10 +31,9 @@ class PromptEngine:
 
         if (self.description != ""):
             self.context += self.config.commentOperator + " " + self.description + self.config.newlineOperator + self.config.commentCloseOperator
-
             self.context += self.config.newlineOperator
         
-        if (self.examples != None):
+        if (self.examples != []):
             for example in self.examples:
                 self.context += self.config.startSequence + " " + example.naturalLanguage + self.config.stopSequence + self.config.newlineOperator
                 self.context += example.code + self.config.newlineOperator
@@ -42,7 +41,7 @@ class PromptEngine:
         if (self.config.modelConfig != None and self.__assert_token_limit(self.context, self.config.modelConfig.max_tokens)):
             raise Exception("Token limit exceeded, reduce the number of examples or size of description. Alternatively, you may increase the max_tokens in ModelConfig")
         
-        if (self.dialog != None):
+        if (self.dialog != []):
             for dialog in self.dialog:
                 self.context += self.config.startSequence + " " + dialog.naturalLanguage + self.config.stopSequence + self.config.newlineOperator
                 self.context += dialog.code + self.config.newlineOperator
@@ -65,10 +64,16 @@ class PromptEngine:
         self.dialog.append(interaction)
 
     def removeLastInteraction(self):
-        self.dialog.pop()
+        if (len(self.dialog) > 0):
+            self.dialog.pop()
+        else:
+            raise Exception("No interactions to remove")
 
     def removeFirstInteraction(self):
-        self.dialog.pop(0)
+        if (len(self.dialog) > 0):
+            self.dialog.pop(0)
+        else:
+            raise Exception("No interactions to remove")
     
     def __assert_token_limit(self, context: str, max_tokens: int):
         if context != "" or context != None:
