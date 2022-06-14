@@ -69,3 +69,11 @@ def test_pass_addInteraction():
     promptEngine.buildContext()
     promptEngine.addInteraction(Interaction("Bye", "print('Bye')"))
     assert promptEngine.buildContext() == "## Hi\nprint('Hi')\n## Bye\nprint('Bye')\n"
+
+def test_pass_buildPrompt():
+    config = PromptEngineConfig()
+    description = ""
+    dialog = [Interaction("Hi", "print('Hi')")]
+    promptEngine = PromptEngine(config, description, dialog=dialog)
+    promptEngine.buildContext()
+    assert promptEngine.buildPrompt("Hello") == "## Hi\nprint('Hi')\n## Hello\n"

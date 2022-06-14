@@ -65,11 +65,16 @@ class PromptEngine:
 
         return self.context
 
-    def buildPrompt(self, naturalLanguage: str):
+    def buildPrompt(self, naturalLanguage: str, newlineEnd: bool = True):
         """
         Builds the prompt from the parameters given to the Prompt Engine 
         """
-        return self.context + self.config.newlineOperator + naturalLanguage
+        prompt: str = self.context + self.config.startSequence + " " + naturalLanguage + self.config.stopSequence
+
+        if (newlineEnd):
+            prompt += self.config.newlineOperator
+
+        return prompt
 
     def truncatePrompt(self, prompt: str):
         """
