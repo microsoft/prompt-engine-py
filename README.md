@@ -2,6 +2,12 @@
 
 This package provides an easy and reusable interface to build prompts for large scale language models (LLMs). 
 
+Prompt Engineering is a technique used to elicit intended responses out of a LLM model and can work on many strategies.
+
+This library is built on the strategy described in this [Microsoft Prompt Engineering](https://microsoft.github.io/prompt-engineering/) article wherein you are provided a high level description, some examples, and user interactions to help the model understand what to produce and to keep track of what it already has produced. 
+
+As new user interactions keep coming in, the old ones are cycled out based on the max_tokens set in the ModelConfig. This ensures that the context of the model does not get too big and keeps generating meaningful responses throughout its tenure.  
+
 ## Requirements
 * [Python 3.7.1+](https://www.python.org/downloads/)  
 
