@@ -31,32 +31,20 @@ class PromptEngine:
         self.context: str = ""
 
         # Add the model config parameters to the context
-        if (self.config.modelConfig != None):
-            promptEngineConfigMembers = [attr for attr in dir(self.config.modelConfig) if not callable(getattr(self.config.modelConfig, attr)) and not attr.startswith("__")]
-            for member in promptEngineConfigMembers:
-                self.context += self.config.commentOperator + " " + member + ": " + str(getattr(self.config.modelConfig, member)) + self.config.commentCloseOperator + self.config.newlineOperator
-                self.context += self.config.newlineOperator
+        self._insert_model_config()
 
         # Add the description to the context
-        if (self.description != ""):
-            self.context += self.config.commentOperator + " " + self.description + self.config.newlineOperator + self.config.commentCloseOperator
-            self.context += self.config.newlineOperator
+        self._insert_description()
         
         # Add the examples to the context
-        if (self.examples != []):
-            for example in self.examples:
-                self.context += self.config.startSequence + " " + example.naturalLanguage + self.config.stopSequence + self.config.newlineOperator
-                self.context += example.code + self.config.newlineOperator
+        self._insert_examples()
         
         # Checks if the number of tokens after adding the examples in the context is greater than the max_tokens
         if (self.config.modelConfig != None and self.__assert_token_limit(self.context, self.config.modelConfig.max_tokens)):
             raise Exception("Token limit exceeded, reduce the number of examples or size of description. Alternatively, you may increase the max_tokens in ModelConfig")
         
         # Add the dialog to the context
-        if (self.dialog != []):
-            for dialog in self.dialog:
-                self.context += self.config.startSequence + " " + dialog.naturalLanguage + self.config.stopSequence + self.config.newlineOperator
-                self.context += dialog.code + self.config.newlineOperator
+        self._insert_dialog()
         
         # Checks if the number of tokens after adding the dialog in the context is greater than the max_tokens, and if so, starts removing the most historical interactions
         if (self.config.modelConfig != None and self.__assert_token_limit(self.context, self.config.modelConfig.max_tokens)):
@@ -110,6 +98,42 @@ class PromptEngine:
             self.dialog.pop(0)
         else:
             raise Exception("No interactions to remove")
+
+    def _insert_model_config(self):
+        """
+        Inserts the model config into the context
+        """
+        if (self.config.modelConfig != None):
+            promptEngineConfigMembers = [attr for attr in dir(self.config.modelConfig) if not callable(getattr(self.config.modelConfig, attr)) and not attr.startswith("__")]
+            for member in promptEngineConfigMembers:
+                self.context += self.config.commentOperator + " " + member + ": " + str(getattr(self.config.modelConfig, member)) + self.config.commentCloseOperator + self.config.newlineOperator
+                self.context += self.config.newlineOperator
+
+    def _insert_description(self):
+        """
+        Inserts the description into the context
+        """
+        if (self.description != ""):
+            self.context += self.config.commentOperator + " " + self.description + self.config.newlineOperator + self.config.commentCloseOperator
+            self.context += self.config.newlineOperator
+
+    def _insert_examples(self):
+        """
+        Inserts the examples into the context
+        """
+        if (self.examples != []):
+            for example in self.examples:
+                self.context += self.config.startSequence + " " + example.naturalLanguage + self.config.stopSequence + self.config.newlineOperator
+                self.context += example.code + self.config.newlineOperator
+
+    def _insert_dialog(self):
+        """
+        Inserts the dialog into the context
+        """
+        if (self.dialog != []):
+            for dialog in self.dialog:
+                self.context += self.config.startSequence + " " + dialog.naturalLanguage + self.config.stopSequence + self.config.newlineOperator
+                self.context += dialog.code + self.config.newlineOperator
     
     def __assert_token_limit(self, context: str, max_tokens: int):
         """
