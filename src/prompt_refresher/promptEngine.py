@@ -2,6 +2,9 @@ from prompt_refresher.interaction import Interaction
 from prompt_refresher.modelConfig import ModelConfig
 
 class PromptEngineConfig: 
+    """
+    This class provides the configuration for the Prompt Engine
+    """
     def __init__(self, modelConfig: ModelConfig = None, commentOperator: str = "#", commentCloseOperator: str = "", newlineOperator: str = "\n", startSequence: str = "##", stopSequence: str = ""):
         self.modelConfig = modelConfig
         self.commentOperator = commentOperator
@@ -12,6 +15,9 @@ class PromptEngineConfig:
 
 
 class PromptEngine:
+    """
+    Prompt Engine provides a reusable interface for the developer to construct prompts for large scale language model inference
+    """
     def __init__(self, config: PromptEngineConfig, description: str, examples: list = [], dialog: list = []):
         self.config = config
         self.description = description
