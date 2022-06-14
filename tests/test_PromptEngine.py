@@ -28,7 +28,6 @@ def test_pass_removeLastInteraction():
     description = ""
     dialog = [Interaction("Hi", "print('Hi')"), Interaction("Bye", "print('Bye')")]
     promptEngine = PromptEngine(config, description, dialog=dialog)
-    promptEngine.buildContext()
     promptEngine.removeLastInteraction()
     assert promptEngine.buildContext() == "## Hi\nprint('Hi')\n"
 
@@ -47,7 +46,6 @@ def test_pass_removeFirstInteraction():
     description = ""
     dialog = [Interaction("Hi", "print('Hi')"), Interaction("Bye", "print('Bye')")]
     promptEngine = PromptEngine(config, description, dialog=dialog)
-    promptEngine.buildContext()
     promptEngine.removeFirstInteraction()
     assert promptEngine.buildContext() == "## Bye\nprint('Bye')\n"
 
@@ -66,17 +64,8 @@ def test_pass_addInteraction():
     description = ""
     dialog = [Interaction("Hi", "print('Hi')")]
     promptEngine = PromptEngine(config, description, dialog=dialog)
-    promptEngine.buildContext()
     promptEngine.addInteraction(Interaction("Bye", "print('Bye')"))
     assert promptEngine.buildContext() == "## Hi\nprint('Hi')\n## Bye\nprint('Bye')\n"
-
-def test_pass_buildPrompt():
-    config = PromptEngineConfig()
-    description = ""
-    dialog = [Interaction("Hi", "print('Hi')")]
-    promptEngine = PromptEngine(config, description, dialog=dialog)
-    promptEngine.buildContext()
-    assert promptEngine.buildPrompt("Hello") == "## Hi\nprint('Hi')\n## Hello\n"
 
 def test_pass_overriding_insert_examples():
     config = PromptEngineConfig()
@@ -94,5 +83,36 @@ def test_pass_overriding_insert_examples():
                     self.context += self.config.newlineOperator
                     self.context += example.code + self.config.newlineOperator
 
-    promptEngine = PromptEngineOverloaded(config, description, examples=examples)
-    assert promptEngine.buildContext() == "##This is an example: Hi\nprint('Hi')\n"
+    promptEngineOverloaded = PromptEngineOverloaded(config, description, examples=examples)
+    assert promptEngineOverloaded.buildContext() == "##This is an example: Hi\nprint('Hi')\n"
+
+def test_pass_buildPrompt():
+    config = PromptEngineConfig()
+    description = ""
+    dialog = [Interaction("Hi", "print('Hi')"), Interaction("Bye", "print('Bye')")]
+    promptEngine = PromptEngine(config, description, dialog=dialog)
+    promptEngine.buildContext()
+    assert promptEngine.buildPrompt("Hello") == "## Hi\nprint('Hi')\n## Bye\nprint('Bye')\n## Hello\n"
+
+def test_pass_addExample():
+    config = PromptEngineConfig()
+    description = ""
+    examples = [Interaction("Hello", "print('Hello')"), Interaction("Goodbye", "print('Goodbye')")]
+    dialog = [Interaction("Hi", "print('Hi')"), Interaction("Bye", "print('Bye')")]
+    promptEngine = PromptEngine(config, description, dialog=dialog, examples=examples)
+    promptEngine.addExample(Interaction("Hello there", "print('Hello there')"))
+    assert promptEngine.buildContext() == "## Hello\nprint('Hello')\n## Goodbye\nprint('Goodbye')\n## Hello there\nprint('Hello there')\n## Hi\nprint('Hi')\n## Bye\nprint('Bye')\n"
+    
+def test_pass_masterIntegrationTest():
+    config = PromptEngineConfig()
+    description = ""
+    dialog = [Interaction("Hi", "print('Hi')"), Interaction("Bye", "print('Bye')")]
+    examples = [Interaction("Hello", "print('Hello')"), Interaction("Goodbye", "print('Goodbye')")]
+    promptEngine = PromptEngine(config, description, dialog=dialog, examples=examples)
+    promptEngine.addInteraction(Interaction("Bye", "print('Bye')"))
+    promptEngine.removeFirstInteraction()
+    promptEngine.addInteraction(Interaction("Hello there", "print('Hello there')"))
+    promptEngine.removeLastInteraction()
+    promptEngine.addExample(Interaction("Hello there", "print('Hello there')"))
+    promptEngine.buildContext()
+    assert promptEngine.buildPrompt("Hello") == "## Hello\nprint('Hello')\n## Goodbye\nprint('Goodbye')\n## Hello there\nprint('Hello there')\n## Bye\nprint('Bye')\n## Bye\nprint('Bye')\n## Hello\n"

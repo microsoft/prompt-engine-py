@@ -75,6 +75,12 @@ class PromptEngine(object):
         else:
             return prompt
     
+    def addExample(self, example: Interaction):
+        """
+        Adds an interaction to the example
+        """
+        self.examples.append(example)
+    
     def addInteraction(self, interaction: Interaction):
         """
         Adds an interaction to the dialog
