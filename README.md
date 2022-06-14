@@ -105,4 +105,4 @@ pr.buildContext()
 ```
 The Prompt Engine will now use the updated logic of the insert examples logic for building the context.
 
-For in-depth look into all the functions available, please have a look at the [PromptEngine]() class. 
+For in-depth look into all the functions available, please have a look at the [PromptEngine](https://github.com/amasandMS/Prompt-Refresher/blob/main/src/prompt_refresher/promptEngine.py) class. 
