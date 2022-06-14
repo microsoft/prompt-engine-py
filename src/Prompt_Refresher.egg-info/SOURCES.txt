@@ -2,10 +2,6 @@ LICENSE
 README.md
 pyproject.toml
 setup.py
-src/Prompt_Refresher.egg-info/PKG-INFO
-src/Prompt_Refresher.egg-info/SOURCES.txt
-src/Prompt_Refresher.egg-info/dependency_links.txt
-src/Prompt_Refresher.egg-info/top_level.txt
 src/prompt_refresher/__init__.py
 src/prompt_refresher/interaction.py
 src/prompt_refresher/modelConfig.py

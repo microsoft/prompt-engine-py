@@ -22,8 +22,8 @@ from prompt_refresher.interaction import Interaction
 config = PromptEngineConfig(ModelConfig(max_tokens=50), commentOperator = "###")
 description = "This code takes in natural language utterance and generates code This code takes in natural language utterance and generates code"
 examples = [Interaction("Hello", "print('Hello')"), Interaction("Goodbye", "print('Goodbye')")]
-dialog = [Interaction("Hi", "print('Hi')"), Interaction("Bye", "print('Bye')")]
-promptEngine = PromptEngine(config, description, examples, dialog)
+interactions = [Interaction("Hi", "print('Hi')"), Interaction("Bye", "print('Bye')")]
+promptEngine = PromptEngine(config, description, examples, interactions)
 
 print (promptEngine.buildContext())
 ```
@@ -73,9 +73,9 @@ These are the prebuilt functions that are provided by the prompt_refresher libra
 | `buildContext` | None | Constructs and return the context with parameters provided to the Prompt Engine |
 | `buildPrompt` | Prompt: str | Uses the context constructed by the build context function and generates a prompt to query  |
 | `truncatePrompt` | max_tokens: int |Truncates the prompt to the max_tokens limit|
-| `addInteraction` | interaction: Interaction(naturalLanguage: str, code: str) | Adds the given natural language - code interaction to the dialogs |
-| `removeFirstInteraction` | None | Removes the first/most historical interaction added to the dialogs |
-| `removeLastInteraction` | None | Removes the last interaction added to the dialogs |
+| `addInteraction` | interaction: Interaction(naturalLanguage: str, code: str) | Adds the given natural language - code interaction to the interactionss |
+| `removeFirstInteraction` | None | Removes the first/most historical interaction added to the interactionss |
+| `removeLastInteraction` | None | Removes the last interaction added to the interactionss |
 
 ## Adding more info to your contexts
 

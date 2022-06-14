@@ -18,15 +18,15 @@ class PromptEngine(object):
     """
     Prompt Engine provides a reusable interface for the developer to construct prompts for large scale language model inference
     """
-    def __init__(self, config: PromptEngineConfig, description: str, examples: list = [], dialog: list = []):
+    def __init__(self, config: PromptEngineConfig, description: str, examples: list = [], interactions: list = []):
         self.config = config
         self.description = description
         self.examples = examples
-        self.dialog = dialog
+        self.interactions = interactions
 
     def buildContext(self):
         """
-        Builds the context from the description, examples, and dialog.
+        Builds the context from the description, examples, and interactions.
         """
         self.context: str = ""
 
@@ -43,10 +43,10 @@ class PromptEngine(object):
         if (self.config.modelConfig != None and self.__assert_token_limit(self.context, self.config.modelConfig.max_tokens)):
             raise Exception("Token limit exceeded, reduce the number of examples or size of description. Alternatively, you may increase the max_tokens in ModelConfig")
         
-        # Add the dialog to the context
-        self._insert_dialog()
+        # Add the interactions to the context
+        self._insert_interactions()
         
-        # Checks if the number of tokens after adding the dialog in the context is greater than the max_tokens, and if so, starts removing the most historical interactions
+        # Checks if the number of tokens after adding the interactions in the context is greater than the max_tokens, and if so, starts removing the most historical interactions
         if (self.config.modelConfig != None and self.__assert_token_limit(self.context, self.config.modelConfig.max_tokens)):
             self.removeFirstInteraction()
             self.buildContext()
@@ -83,25 +83,25 @@ class PromptEngine(object):
     
     def addInteraction(self, interaction: Interaction):
         """
-        Adds an interaction to the dialog
+        Adds an interaction to the interactions
         """
-        self.dialog.append(interaction)
+        self.interactions.append(interaction)
 
     def removeLastInteraction(self):
         """
-        Removes the last interaction from the dialog
+        Removes the last interaction from the interactions
         """
-        if (len(self.dialog) > 0):
-            self.dialog.pop()
+        if (len(self.interactions) > 0):
+            self.interactions.pop()
         else:
             raise Exception("No interactions to remove")
 
     def removeFirstInteraction(self):
         """
-        Removes the first interaction from the dialog
+        Removes the first interaction from the interactions
         """
-        if (len(self.dialog) > 0):
-            self.dialog.pop(0)
+        if (len(self.interactions) > 0):
+            self.interactions.pop(0)
         else:
             raise Exception("No interactions to remove")
 
@@ -132,14 +132,14 @@ class PromptEngine(object):
                 self.context += self.config.startSequence + " " + example.naturalLanguage + self.config.stopSequence + self.config.newlineOperator
                 self.context += example.code + self.config.newlineOperator
 
-    def _insert_dialog(self):
+    def _insert_interactions(self):
         """
-        Inserts the dialog into the context
+        Inserts the interactions into the context
         """
-        if (self.dialog != []):
-            for dialog in self.dialog:
-                self.context += self.config.startSequence + " " + dialog.naturalLanguage + self.config.stopSequence + self.config.newlineOperator
-                self.context += dialog.code + self.config.newlineOperator
+        if (self.interactions != []):
+            for interaction in self.interactions:
+                self.context += self.config.startSequence + " " + interaction.naturalLanguage + self.config.stopSequence + self.config.newlineOperator
+                self.context += interaction.code + self.config.newlineOperator
     
     def __assert_token_limit(self, context: str, max_tokens: int):
         """
