@@ -4,11 +4,20 @@ from src.prompt_refresher.interaction import Interaction
 
 def test_pass():
     config = PromptEngineConfig(ModelConfig(max_tokens=32), commentOperator = "###")
-    description = "This code takes in natural language utterance and generates code This code takes in natural language utterance and generates code"
+    description = "This code takes in nl"
     examples = [Interaction("Hello", "print('Hello')"), Interaction("Goodbye", "print('Goodbye')")]
     interactions = [Interaction("Hi", "print('Hi')"), Interaction("Bye", "print('Bye')")]
-    promptEngine = PromptEngine(config, description, examples, interactions)
-    assert promptEngine.buildContext() != ""
+    promptEngine = PromptEngine(config = config, description = description, examples = examples, interactions = interactions)
+    assert promptEngine.buildContext() == "### max_tokens: 32\n\n### This code takes in nl\n\n## Hello\nprint('Hello')\n## Goodbye\nprint('Goodbye')\n## Hi\nprint('Hi')\n## Bye\nprint('Bye')\n"
+
+def test_pass_high_level_context():
+    config = PromptEngineConfig(ModelConfig(max_tokens=32), commentOperator = "###")
+    description = "This code takes in nl"
+    highLevelContext = ["Hi", "Bye"]
+    examples = [Interaction("Hello", "print('Hello')"), Interaction("Goodbye", "print('Goodbye')")]
+    interactions = [Interaction("Hi", "print('Hi')"), Interaction("Bye", "print('Bye')")]
+    promptEngine = PromptEngine(config = config, description = description, highLevelContext = highLevelContext, examples = examples, interactions = interactions)
+    assert promptEngine.buildContext() == "### max_tokens: 32\n\n### This code takes in nl\n\n### Hi\n### Bye\n\n## Hello\nprint('Hello')\n## Goodbye\nprint('Goodbye')\n## Hi\nprint('Hi')\n## Bye\nprint('Bye')\n"
 
 def test_pass_model_config():
     config = PromptEngineConfig(ModelConfig(max_tokens=32), commentOperator = "###")

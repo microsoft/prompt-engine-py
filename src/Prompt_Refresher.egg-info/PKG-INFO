@@ -17,13 +17,22 @@ License-File: LICENSE
 
 This package provides an easy and reusable interface to build prompts for large scale language models (LLMs). 
 
+Prompt Engineering is a technique used to elicit intended responses out of a LLM model and can work on many strategies.
+
+This library is built on the strategy described in this [Microsoft Prompt Engineering](https://microsoft.github.io/prompt-engineering/) article wherein you are provided a high level description, some examples, and user interactions to help the model understand what to produce and to keep track of what it already has produced. 
+
+As new user interactions keep coming in, the old ones are cycled out based on the max_tokens set in the ModelConfig. This ensures that the context of the model does not get too big and keeps generating meaningful responses throughout its tenure.  
+
 ## Requirements
 * [Python 3.7.1+](https://www.python.org/downloads/)  
 
 ## Install
 
 ```bash
-pip install prompt_refresher
+git clone https://github.com/amasandMS/Prompt-Refresher.git
+cd Prompt-Refresher
+python -m build
+pip install .\dist\prompt_refresher-ver.x.x.x-py3-none-any.whl
 ```
 
 ## Simple Demo
@@ -39,6 +48,17 @@ description = "This code takes in natural language utterance and generates code 
 examples = [Interaction("Hello", "print('Hello')"), Interaction("Goodbye", "print('Goodbye')")]
 interactions = [Interaction("Hi", "print('Hi')"), Interaction("Bye", "print('Bye')")]
 promptEngine = PromptEngine(config, description, examples, interactions)
+
+## OR ##
+
+config = PromptEngineConfig(ModelConfig(max_tokens=50), commentOperator = "###")
+description = "This code takes in natural language utterance and generates code This code takes in natural language utterance and generates code"
+promptEngine = PromptEngine(config, description)
+
+promptEngine.addExample(Interaction("Hello", "print('Hello')"))
+promptEngine.addExample(Interaction("Goodbye", "print('Goodbye')"))
+promptEngine.addInteraction(Interaction("Hi", "print('Hi')"))
+promptEngine.addInteraction(Interaction("Bye", "print('Bye')"))
 
 print (promptEngine.buildContext())
 ```
@@ -59,6 +79,7 @@ print('Hi')
 print('Bye')
 ```
 
+More examples can be found in the [Examples](https://github.com/amasandMS/Prompt-Refresher/tree/main/examples) folder.
 
 ## Prompt Engineering and Context Files
 

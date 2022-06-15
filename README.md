@@ -30,15 +30,17 @@ from prompt_refresher.interaction import Interaction
 
 config = PromptEngineConfig(ModelConfig(max_tokens=50), commentOperator = "###")
 description = "This code takes in natural language utterance and generates code This code takes in natural language utterance and generates code"
+highLevelContext = ["Hi", "Bye"]
 examples = [Interaction("Hello", "print('Hello')"), Interaction("Goodbye", "print('Goodbye')")]
 interactions = [Interaction("Hi", "print('Hi')"), Interaction("Bye", "print('Bye')")]
-promptEngine = PromptEngine(config, description, examples, interactions)
+promptEngine = PromptEngine(config, description, highLevelContext, examples, interactions)
 
 ## OR ##
 
 config = PromptEngineConfig(ModelConfig(max_tokens=50), commentOperator = "###")
 description = "This code takes in natural language utterance and generates code This code takes in natural language utterance and generates code"
-promptEngine = PromptEngine(config, description)
+highLevelContext = ["Hi", "Bye"]
+promptEngine = PromptEngine(config, description, highLevelContext)
 
 promptEngine.addExample(Interaction("Hello", "print('Hello')"))
 promptEngine.addExample(Interaction("Goodbye", "print('Goodbye')"))
@@ -53,6 +55,9 @@ print (promptEngine.buildContext())
 ### max_tokens: 50
 
 ### This code takes in natural language utterance and generates code This code takes in natural language utterance and generates code
+
+### Hi
+### Bye
 
 ## Hello
 print('Hello')

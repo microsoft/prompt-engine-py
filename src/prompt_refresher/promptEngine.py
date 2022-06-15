@@ -18,9 +18,10 @@ class PromptEngine(object):
     """
     Prompt Engine provides a reusable interface for the developer to construct prompts for large scale language model inference
     """
-    def __init__(self, config: PromptEngineConfig, description: str, examples: list = [], interactions: list = []):
+    def __init__(self, config: PromptEngineConfig, description: str, highLevelContext: list = [], examples: list = [], interactions: list = []):
         self.config = config
         self.description = description
+        self.highLevelContext = highLevelContext
         self.examples = examples
         self.interactions = interactions
 
@@ -35,6 +36,9 @@ class PromptEngine(object):
 
         # Add the description to the context
         self._insert_description()
+
+        # Add the high level context to the context
+        self._insert_highLevelContext()
         
         # Add the examples to the context
         self._insert_examples()
@@ -120,7 +124,16 @@ class PromptEngine(object):
         Inserts the description into the context
         """
         if (self.description != ""):
-            self.context += self.config.commentOperator + " " + self.description + self.config.newlineOperator + self.config.commentCloseOperator
+            self.context += self.config.commentOperator + " " + self.description + self.config.commentCloseOperator + self.config.newlineOperator
+            self.context += self.config.newlineOperator
+    
+    def _insert_highLevelContext(self):
+        """
+        Inserts the description into the context
+        """
+        if (self.highLevelContext != []):
+            for context in self.highLevelContext:
+                self.context += self.config.commentOperator + " " + context + self.config.commentCloseOperator + self.config.newlineOperator
             self.context += self.config.newlineOperator
 
     def _insert_examples(self):
