@@ -18,11 +18,11 @@ class PromptEngine(object):
     """
     Prompt Engine provides a reusable interface for the developer to construct prompts for large scale language model inference
     """
-    def __init__(self, config: PromptEngineConfig, description: str, high_level_context: list = [], examples: list = [], interactions: list = []):
+    def __init__(self, config: PromptEngineConfig, description: str, examples: list = [], flow_reset_text = "", interactions: list = []):
         self.config = config
         self.description = description
-        self.high_level_context = high_level_context
         self.examples = examples
+        self.flow_reset_text = flow_reset_text
         self.interactions = interactions
 
     def build_context(self):
@@ -36,9 +36,6 @@ class PromptEngine(object):
 
         # Add the description to the context
         self._insert_description()
-
-        # Add the high level context to the context
-        self._insert_high_level_context()
         
         # Add the examples to the context
         self._insert_examples()
@@ -47,6 +44,9 @@ class PromptEngine(object):
         if (self.config.model_config != None and self.__assert_token_limit(self.context, self.config.model_config.max_tokens)):
             raise Exception("Token limit exceeded, reduce the number of examples or size of description. Alternatively, you may increase the max_tokens in ModelConfig")
         
+        # Add the flow reset text to the context
+        self._insert_flow_reset_text()
+
         # Add the interactions to the context
         self._insert_interactions()
         
@@ -126,15 +126,6 @@ class PromptEngine(object):
         if (self.description != ""):
             self.context += self.config.comment_operator + " " + self.description + self.config.comment_close_operator + self.config.newline_operator
             self.context += self.config.newline_operator
-    
-    def _insert_high_level_context(self):
-        """
-        Inserts the description into the context
-        """
-        if (self.high_level_context != []):
-            for context in self.high_level_context:
-                self.context += self.config.comment_operator + " " + context + self.config.comment_close_operator + self.config.newline_operator
-            self.context += self.config.newline_operator
 
     def _insert_examples(self):
         """
@@ -144,6 +135,14 @@ class PromptEngine(object):
             for example in self.examples:
                 self.context += self.config.start_sequence + " " + example.natural_language + self.config.stop_sequence + self.config.newline_operator
                 self.context += example.code + self.config.newline_operator
+
+    def _insert_flow_reset_text(self):
+        """
+        Inserts the examples into the context
+        """
+        if (self.flow_reset_text != ""):
+           self.context += self.config.comment_operator + " " + self.flow_reset_text + self.config.comment_close_operator + self.config.newline_operator
+           self.context += self.config.newline_operator
 
     def _insert_interactions(self):
         """

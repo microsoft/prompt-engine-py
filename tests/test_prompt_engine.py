@@ -10,15 +10,6 @@ def test_pass():
     prompt_engine = PromptEngine(config = config, description = description, examples = examples, interactions = interactions)
     assert prompt_engine.build_context() == "### max_tokens: 32\n\n### This code takes in nl\n\n## Hello\nprint('Hello')\n## Goodbye\nprint('Goodbye')\n## Hi\nprint('Hi')\n## Bye\nprint('Bye')\n"
 
-def test_pass_high_level_context():
-    config = PromptEngineConfig(ModelConfig(max_tokens=32), comment_operator = "###")
-    description = "This code takes in nl"
-    high_level_context = ["Hi", "Bye"]
-    examples = [Interaction("Hello", "print('Hello')"), Interaction("Goodbye", "print('Goodbye')")]
-    interactions = [Interaction("Hi", "print('Hi')"), Interaction("Bye", "print('Bye')")]
-    prompt_engine = PromptEngine(config = config, description = description, high_level_context = high_level_context, examples = examples, interactions = interactions)
-    assert prompt_engine.build_context() == "### max_tokens: 32\n\n### This code takes in nl\n\n### Hi\n### Bye\n\n## Hello\nprint('Hello')\n## Goodbye\nprint('Goodbye')\n## Hi\nprint('Hi')\n## Bye\nprint('Bye')\n"
-
 def test_pass_model_config():
     config = PromptEngineConfig(ModelConfig(max_tokens=32), comment_operator = "###")
     description = ""
@@ -112,16 +103,26 @@ def test_pass_add_example():
     prompt_engine.add_example(Interaction("Hello there", "print('Hello there')"))
     assert prompt_engine.build_context() == "## Hello\nprint('Hello')\n## Goodbye\nprint('Goodbye')\n## Hello there\nprint('Hello there')\n## Hi\nprint('Hi')\n## Bye\nprint('Bye')\n"
 
+def test_pass_flow_reset_text():
+    config = PromptEngineConfig()
+    description = "Trial Description"
+    examples = [Interaction("Hello", "print('Hello')"), Interaction("Goodbye", "print('Goodbye')")]
+    interactions = [Interaction("Hi", "print('Hi')"), Interaction("Bye", "print('Bye')")]
+    flow_reset_text = "This is the flow reset text"
+    prompt_engine = PromptEngine(config, description, interactions=interactions, flow_reset_text=flow_reset_text, examples=examples)
+    assert prompt_engine.build_context() == "# Trial Description\n\n## Hello\nprint('Hello')\n## Goodbye\nprint('Goodbye')\n# This is the flow reset text\n\n## Hi\nprint('Hi')\n## Bye\nprint('Bye')\n"
+
 def test_pass_masterIntegrationTest():
     config = PromptEngineConfig()
     description = ""
     interactions = [Interaction("Hi", "print('Hi')"), Interaction("Bye", "print('Bye')")]
     examples = [Interaction("Hello", "print('Hello')"), Interaction("Goodbye", "print('Goodbye')")]
-    prompt_engine = PromptEngine(config, description, interactions=interactions, examples=examples)
+    flow_reset_text = "This is the flow reset text"
+    prompt_engine = PromptEngine(config, description, interactions=interactions, flow_reset_text=flow_reset_text, examples=examples)
     prompt_engine.add_interaction(Interaction("Bye", "print('Bye')"))
     prompt_engine.remove_first_interaction()
     prompt_engine.add_interaction(Interaction("Hello there", "print('Hello there')"))
     prompt_engine.remove_last_interaction()
     prompt_engine.add_example(Interaction("Hello there", "print('Hello there')"))
     prompt_engine.build_context()
-    assert prompt_engine.build_prompt("Hello") == "## Hello\nprint('Hello')\n## Goodbye\nprint('Goodbye')\n## Hello there\nprint('Hello there')\n## Bye\nprint('Bye')\n## Bye\nprint('Bye')\n## Hello\n"
+    assert prompt_engine.build_prompt("Hello") == "## Hello\nprint('Hello')\n## Goodbye\nprint('Goodbye')\n## Hello there\nprint('Hello there')\n# This is the flow reset text\n\n## Bye\nprint('Bye')\n## Bye\nprint('Bye')\n## Hello\n"
