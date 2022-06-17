@@ -1,31 +1,31 @@
 from prompt_refresher.interaction import Interaction
-from prompt_refresher.modelConfig import ModelConfig
+from prompt_refresher.model_config import ModelConfig
 
 class PromptEngineConfig: 
     """
     This class provides the configuration for the Prompt Engine
     """
-    def __init__(self, modelConfig: ModelConfig = None, commentOperator: str = "#", commentCloseOperator: str = "", newlineOperator: str = "\n", startSequence: str = "##", stopSequence: str = ""):
-        self.modelConfig = modelConfig
-        self.commentOperator = commentOperator
-        self.commentCloseOperator = commentCloseOperator
-        self.newlineOperator = newlineOperator
-        self.startSequence = startSequence
-        self.stopSequence = stopSequence
+    def __init__(self, model_config: ModelConfig = None, comment_operator: str = "#", comment_close_operator: str = "", newline_operator: str = "\n", start_sequence: str = "##", stop_sequence: str = ""):
+        self.model_config = model_config
+        self.comment_operator = comment_operator
+        self.comment_close_operator = comment_close_operator
+        self.newline_operator = newline_operator
+        self.start_sequence = start_sequence
+        self.stop_sequence = stop_sequence
 
 
 class PromptEngine(object):
     """
     Prompt Engine provides a reusable interface for the developer to construct prompts for large scale language model inference
     """
-    def __init__(self, config: PromptEngineConfig, description: str, highLevelContext: list = [], examples: list = [], interactions: list = []):
+    def __init__(self, config: PromptEngineConfig, description: str, high_level_context: list = [], examples: list = [], interactions: list = []):
         self.config = config
         self.description = description
-        self.highLevelContext = highLevelContext
+        self.high_level_context = high_level_context
         self.examples = examples
         self.interactions = interactions
 
-    def buildContext(self):
+    def build_context(self):
         """
         Builds the context from the description, examples, and interactions.
         """
@@ -38,60 +38,60 @@ class PromptEngine(object):
         self._insert_description()
 
         # Add the high level context to the context
-        self._insert_highLevelContext()
+        self._insert_high_level_context()
         
         # Add the examples to the context
         self._insert_examples()
         
         # Checks if the number of tokens after adding the examples in the context is greater than the max_tokens
-        if (self.config.modelConfig != None and self.__assert_token_limit(self.context, self.config.modelConfig.max_tokens)):
+        if (self.config.model_config != None and self.__assert_token_limit(self.context, self.config.model_config.max_tokens)):
             raise Exception("Token limit exceeded, reduce the number of examples or size of description. Alternatively, you may increase the max_tokens in ModelConfig")
         
         # Add the interactions to the context
         self._insert_interactions()
         
         # Checks if the number of tokens after adding the interactions in the context is greater than the max_tokens, and if so, starts removing the most historical interactions
-        if (self.config.modelConfig != None and self.__assert_token_limit(self.context, self.config.modelConfig.max_tokens)):
-            self.removeFirstInteraction()
-            self.buildContext()
+        if (self.config.model_config != None and self.__assert_token_limit(self.context, self.config.model_config.max_tokens)):
+            self.remove_first_interaction()
+            self.build_context()
 
         return self.context
 
-    def buildPrompt(self, naturalLanguage: str, newlineEnd: bool = True):
+    def build_prompt(self, natural_language: str, newlineEnd: bool = True):
         """
         Builds the prompt from the parameters given to the Prompt Engine 
         """
-        prompt: str = self.context + self.config.startSequence + " " + naturalLanguage + self.config.stopSequence
+        prompt: str = self.context + self.config.start_sequence + " " + natural_language + self.config.stop_sequence
 
         if (newlineEnd):
-            prompt += self.config.newlineOperator
+            prompt += self.config.newline_operator
 
         return prompt
 
-    def truncatePrompt(self, prompt: str):
+    def truncate_prompt(self, prompt: str):
         """
-        Truncates the prompt to the max_tokens in the modelConfig
+        Truncates the prompt to the max_tokens in the model_config
         """
-        if (self.config.modelConfig != None and self.__assert_token_limit(prompt, self.config.modelConfig.max_tokens)):
-            prompt = prompt.split()[:self.config.modelConfig.max_tokens]
+        if (self.config.model_config != None and self.__assert_token_limit(prompt, self.config.model_config.max_tokens)):
+            prompt = prompt.split()[:self.config.model_config.max_tokens]
             prompt = " ".join(prompt)
             return prompt
         else:
             return prompt
     
-    def addExample(self, example: Interaction):
+    def add_example(self, example: Interaction):
         """
         Adds an interaction to the example
         """
         self.examples.append(example)
     
-    def addInteraction(self, interaction: Interaction):
+    def add_interaction(self, interaction: Interaction):
         """
         Adds an interaction to the interactions
         """
         self.interactions.append(interaction)
 
-    def removeLastInteraction(self):
+    def remove_last_interaction(self):
         """
         Removes the last interaction from the interactions
         """
@@ -100,7 +100,7 @@ class PromptEngine(object):
         else:
             raise Exception("No interactions to remove")
 
-    def removeFirstInteraction(self):
+    def remove_first_interaction(self):
         """
         Removes the first interaction from the interactions
         """
@@ -113,28 +113,28 @@ class PromptEngine(object):
         """
         Inserts the model config into the context
         """
-        if (self.config.modelConfig != None):
-            promptEngineConfigMembers = [attr for attr in dir(self.config.modelConfig) if not callable(getattr(self.config.modelConfig, attr)) and not attr.startswith("__")]
-            for member in promptEngineConfigMembers:
-                self.context += self.config.commentOperator + " " + member + ": " + str(getattr(self.config.modelConfig, member)) + self.config.commentCloseOperator + self.config.newlineOperator
-                self.context += self.config.newlineOperator
+        if (self.config.model_config != None):
+            prompt_engine_config_members = [attr for attr in dir(self.config.model_config) if not callable(getattr(self.config.model_config, attr)) and not attr.startswith("__")]
+            for member in prompt_engine_config_members:
+                self.context += self.config.comment_operator + " " + member + ": " + str(getattr(self.config.model_config, member)) + self.config.comment_close_operator + self.config.newline_operator
+                self.context += self.config.newline_operator
 
     def _insert_description(self):
         """
         Inserts the description into the context
         """
         if (self.description != ""):
-            self.context += self.config.commentOperator + " " + self.description + self.config.commentCloseOperator + self.config.newlineOperator
-            self.context += self.config.newlineOperator
+            self.context += self.config.comment_operator + " " + self.description + self.config.comment_close_operator + self.config.newline_operator
+            self.context += self.config.newline_operator
     
-    def _insert_highLevelContext(self):
+    def _insert_high_level_context(self):
         """
         Inserts the description into the context
         """
-        if (self.highLevelContext != []):
-            for context in self.highLevelContext:
-                self.context += self.config.commentOperator + " " + context + self.config.commentCloseOperator + self.config.newlineOperator
-            self.context += self.config.newlineOperator
+        if (self.high_level_context != []):
+            for context in self.high_level_context:
+                self.context += self.config.comment_operator + " " + context + self.config.comment_close_operator + self.config.newline_operator
+            self.context += self.config.newline_operator
 
     def _insert_examples(self):
         """
@@ -142,8 +142,8 @@ class PromptEngine(object):
         """
         if (self.examples != []):
             for example in self.examples:
-                self.context += self.config.startSequence + " " + example.naturalLanguage + self.config.stopSequence + self.config.newlineOperator
-                self.context += example.code + self.config.newlineOperator
+                self.context += self.config.start_sequence + " " + example.natural_language + self.config.stop_sequence + self.config.newline_operator
+                self.context += example.code + self.config.newline_operator
 
     def _insert_interactions(self):
         """
@@ -151,8 +151,8 @@ class PromptEngine(object):
         """
         if (self.interactions != []):
             for interaction in self.interactions:
-                self.context += self.config.startSequence + " " + interaction.naturalLanguage + self.config.stopSequence + self.config.newlineOperator
-                self.context += interaction.code + self.config.newlineOperator
+                self.context += self.config.start_sequence + " " + interaction.natural_language + self.config.stop_sequence + self.config.newline_operator
+                self.context += interaction.code + self.config.newline_operator
     
     def __assert_token_limit(self, context: str, max_tokens: int):
         """
@@ -160,8 +160,8 @@ class PromptEngine(object):
         """
         if context != None:
             if context != "":
-                numTokens = len(context.split())
-                if numTokens > max_tokens:
+                num_tokens = len(context.split())
+                if num_tokens > max_tokens:
                     return True
                 else:
                     return False
