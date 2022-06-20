@@ -5,8 +5,9 @@ class PromptEngineConfig:
     """
     This class provides the configuration for the Prompt Engine
     """
-    def __init__(self, model_config: ModelConfig = None, description_prefix: str = "#", description_postfix: str = "", newline_operator: str = "\n",
+    def __init__(self, model_config: ModelConfig = ModelConfig(max_tokens=200), description_prefix: str = "#", description_postfix: str = "", newline_operator: str = "\n",
                  input_prefix: str = "##", input_postfix: str = "", output_prefix: str = "", output_postfix: str = ""):
+                 
         self.model_config = model_config
         self.newline_operator = newline_operator
 
@@ -165,23 +166,23 @@ class PromptEngine(object):
                 
             self.context += temp_flow_reset_text
 
-
     def _insert_interactions(self):
         """
         Inserts the interactions into the context
         """
-        temp_interactions_text = ""
+        temp_interactions_list = []
         if (self.interactions != []):
             for interaction in self.interactions[::-1]:
                 temp_interaction_text = self.config.input_prefix + interaction.natural_language + self.config.input_postfix + self.config.newline_operator
                 temp_interaction_text += self.config.output_prefix +  interaction.code + self.config.output_postfix +  self.config.newline_operator*2
 
                 if (self.__assert_token_limit(self.context + temp_interaction_text, self.config.model_config.max_tokens)):
-                    raise Warning("Token limit exceeded, skipping the least recent interaction")
+                    break
                 
-                temp_interactions_text += temp_interaction_text
+                temp_interactions_list.append(temp_interaction_text)
 
-            self.context += temp_interactions_text
+            if (len(temp_interactions_list) > 0):
+                self.context += "".join(temp_interactions_list[::-1])
     
     def __assert_token_limit(self, context: str, max_tokens: int):
         """

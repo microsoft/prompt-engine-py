@@ -4,7 +4,7 @@ from prompt_engine.interaction import Interaction
 
 class ChatEngineConfig(PromptEngineConfig):
     """
-    This class provides the configuration for the Code Engine
+    This class provides the configuration for the Chat Engine
     """
     def __init__(self, model_config: ModelConfig = None,
                  firstUserName: str = "You", secondUserName: str = "Bot"):
