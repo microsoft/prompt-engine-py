@@ -27,6 +27,7 @@ class PromptEngine(object):
         self.examples = examples
         self.flow_reset_text = flow_reset_text
         self.interactions = interactions
+        self.context: str = ""
 
     def build_context(self):
         """
@@ -49,11 +50,6 @@ class PromptEngine(object):
 
         # Add the interactions to the context
         self._insert_interactions()
-        
-        # Checks if the number of tokens after adding the interactions in the context is greater than the max_tokens, and if so, starts removing the most historical interactions
-        if (self.config.model_config != None and self.__assert_token_limit(self.context, self.config.model_config.max_tokens)):
-            self.remove_first_interaction()
-            self.build_context()
 
         return self.context
 
@@ -61,6 +57,7 @@ class PromptEngine(object):
         """
         Builds the prompt from the parameters given to the Prompt Engine 
         """
+        self.context = self.build_context()
         prompt: str = self.context + self.config.input_prefix + " " + natural_language + self.config.input_postfix
 
         if (newlineEnd):
@@ -104,7 +101,7 @@ class PromptEngine(object):
         """
         temp_description_text = ""
         if (self.description != ""):
-            temp_description_text += self.config.description_prefix + " " + self.description + self.config.description_postfix + self.config.newline_operator
+            temp_description_text += self.config.description_prefix + " " + self.description + " " + self.config.description_postfix +  self.config.newline_operator
             temp_description_text += self.config.newline_operator
 
             if (self.__assert_token_limit(self.context + temp_description_text, self.config.model_config.max_tokens)):
@@ -119,8 +116,8 @@ class PromptEngine(object):
         temp_examples_text = ""
         if (self.examples != []):
             for example in self.examples:
-                temp_example_text = self.config.input_prefix + " " + example.natural_language + self.config.input_postfix + self.config.newline_operator
-                temp_example_text += example.code + self.config.newline_operator*2
+                temp_example_text = self.config.input_prefix + " " + example.natural_language + " " + self.config.input_postfix + self.config.newline_operator
+                temp_example_text += self.config.output_prefix + " " +  example.code + " " + self.config.output_postfix +  self.config.newline_operator*2
             
                 if (self.__assert_token_limit(self.context + temp_example_text, self.config.model_config.max_tokens)):
                     raise Exception("""Token limit exceeded, reduce the number of examples or size of description. Alternatively, you may increase the max_tokens in ModelConfig
@@ -136,7 +133,7 @@ class PromptEngine(object):
         """
         temp_flow_reset_text = ""
         if (self.flow_reset_text != ""):
-            temp_flow_reset_text += self.config.description_prefix + " " + self.flow_reset_text + self.config.description_postfix + self.config.newline_operator
+            temp_flow_reset_text += self.config.description_prefix + " " + self.flow_reset_text + " " + self.config.description_postfix + self.config.newline_operator
             temp_flow_reset_text += self.config.newline_operator
            
             if (self.__assert_token_limit(self.context + temp_flow_reset_text, self.config.model_config.max_tokens)):
@@ -152,15 +149,15 @@ class PromptEngine(object):
         temp_interactions_text = ""
         if (self.interactions != []):
             for interaction in self.interactions[::-1]:
-                temp_interaction_text = self.config.input_prefix + " " + interaction.natural_language + self.config.input_postfix + self.config.newline_operator
-                temp_interaction_text += interaction.code + self.config.newline_operator*2
+                temp_interaction_text = self.config.input_prefix + " " + interaction.natural_language + " " + self.config.input_postfix + self.config.newline_operator
+                temp_interaction_text += self.config.output_prefix + " " +  interaction.code + " " + self.config.output_postfix +  self.config.newline_operator*2
 
                 if (self.__assert_token_limit(self.context + temp_interaction_text, self.config.model_config.max_tokens)):
                     raise Warning("Token limit exceeded, skipping the least recent interaction")
                 
                 temp_interactions_text += temp_interaction_text
 
-            self.context += temp_interactions_text + self.config.newline_operator
+            self.context += temp_interactions_text
     
     def __assert_token_limit(self, context: str, max_tokens: int):
         """
