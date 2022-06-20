@@ -17,16 +17,3 @@ class ChatEngine(PromptEngine):
     """
     def __init__(self, config: ChatEngineConfig, description: str, examples: list = [], flow_reset_text = "", interactions: list = []):
         super().__init__(config = config, description = description, examples = examples, flow_reset_text = flow_reset_text, interactions = interactions)
-
-"""
-Example Usage:
-
-config = ChatEngineConfig(ModelConfig(max_tokens=50))
-description = "Convert the given english to french"
-examples = [Interaction("Hello", "Bonjour"), Interaction("Goodbye", "Au revoir")]
-interactions = [Interaction("I am going", "Je vais"), Interaction("great", "génial")]
-code_engine = ChatEngine(config=config, description=description, examples=examples, interactions=interactions)
-
-print (code_engine.build_context())
-
-"""

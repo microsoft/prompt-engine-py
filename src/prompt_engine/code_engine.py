@@ -33,16 +33,3 @@ class CodeEngine(PromptEngine):
     """
     def __init__(self, config: CodeEngineConfig, description: str, examples: list = [], flow_reset_text = "", interactions: list = []):
         super().__init__(config = config, description = description, examples = examples, flow_reset_text = flow_reset_text, interactions = interactions)
-
-"""
-Example Usage:
-
-config = CodeEngineConfig(ModelConfig(max_tokens=50))
-description = "This code takes in natural language utterance and generates code This code takes in natural language utterance and generates code"
-examples = [Interaction("Hello", "print('Hello')"), Interaction("Goodbye", "print('Goodbye')")]
-interactions = [Interaction("Hi", "print('Hi')"), Interaction("Bye", "print('Bye')")]
-code_engine = CodeEngine(config=config, description=description, examples=examples, interactions=interactions)
-
-print (code_engine.build_context())
-
-"""
