@@ -1,6 +1,6 @@
-from src.prompt_refresher.prompt_engine import PromptEngine, PromptEngineConfig
-from src.prompt_refresher.model_config import ModelConfig
-from src.prompt_refresher.interaction import Interaction
+from src.prompt_engine.prompt_engine import PromptEngine, PromptEngineConfig
+from src.prompt_engine.model_config import ModelConfig
+from src.prompt_engine.interaction import Interaction
 
 def test_pass():
     config = PromptEngineConfig(ModelConfig(max_tokens=32), description_prefix = "###")

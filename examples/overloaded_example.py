@@ -1,6 +1,6 @@
-from prompt_refresher.prompt_engine import PromptEngine, PromptEngineConfig
-from prompt_refresher.model_config import ModelConfig
-from prompt_refresher.interaction import Interaction
+from prompt_engine.prompt_engine import PromptEngine, PromptEngineConfig
+from prompt_engine.model_config import ModelConfig
+from prompt_engine.interaction import Interaction
 
 class PromptEngineOverloaded(PromptEngine):
     def _insert_examples(self):

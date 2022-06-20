@@ -1,5 +1,5 @@
-from prompt_refresher.interaction import Interaction
-from prompt_refresher.model_config import ModelConfig
+from prompt_engine.interaction import Interaction
+from prompt_engine.model_config import ModelConfig
 
 class PromptEngineConfig: 
     """

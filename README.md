@@ -1,4 +1,4 @@
-# Prompt-Refresher
+# Prompt-Engine
 
 This package provides an easy and reusable interface to build prompts for large scale language models (LLMs). 
 
@@ -14,19 +14,19 @@ As new user interactions keep coming in, the old ones are cycled out based on th
 ## Install
 
 ```bash
-git clone https://github.com/amasandMS/Prompt-Refresher.git
-cd Prompt-Refresher
+git clone https://github.com/amasandMS/Prompt-Engine.git
+cd Prompt-Engine
 python -m build
-pip install .\dist\prompt_refresher-ver.x.x.x-py3-none-any.whl
+pip install .\dist\prompt_engine-ver.x.x.x-py3-none-any.whl
 ```
 
 ## Simple Demo
 
 ### Code
 ```python
-from prompt_refresher.prompt_engine import PromptEngine, PromptEngineConfig
-from prompt_refresher.model_config import ModelConfig
-from prompt_refresher.interaction import Interaction
+from prompt_engine.prompt_engine import PromptEngine, PromptEngineConfig
+from prompt_engine.model_config import ModelConfig
+from prompt_engine.interaction import Interaction
 
 config = PromptEngineConfig(ModelConfig(max_tokens=50), description_prefix = "###")
 description = "This code takes in natural language utterance and generates code This code takes in natural language utterance and generates code"
@@ -68,7 +68,7 @@ print('Hi')
 print('Bye')
 ```
 
-More examples can be found in the [Examples](https://github.com/amasandMS/Prompt-Refresher/tree/main/examples) folder.
+More examples can be found in the [Examples](https://github.com/amasandMS/Prompt-Engine/tree/main/examples) folder.
 
 ## Prompt Engineering and Context Files
 
@@ -91,7 +91,7 @@ notepad .gitignore
 
 ## Available Functions
 
-These are the prebuilt functions that are provided by the prompt_refresher library
+These are the prebuilt functions that are provided by the prompt_engine library
 
 | Command | Parameters | Description |
 |--|--|--|
@@ -130,4 +130,4 @@ pr.build_context()
 ```
 The Prompt Engine will now use the updated logic of the insert examples logic for building the context.
 
-For in-depth look into all the functions available, please have a look at the [PromptEngine](https://github.com/amasandMS/Prompt-Refresher/blob/main/src/prompt_refresher/prompt_engine.py) class. 
+For in-depth look into all the functions available, please have a look at the [PromptEngine](https://github.com/amasandMS/Prompt-Engine/blob/main/src/prompt_engine/prompt_engine.py) class. 
