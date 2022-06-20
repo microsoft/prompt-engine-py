@@ -8,13 +8,37 @@ class PromptEngineConfig:
     def __init__(self, model_config: ModelConfig = None, description_prefix: str = "#", description_postfix: str = "", newline_operator: str = "\n",
                  input_prefix: str = "##", input_postfix: str = "", output_prefix: str = "", output_postfix: str = ""):
         self.model_config = model_config
-        self.description_prefix = description_prefix
-        self.description_postfix = description_postfix
         self.newline_operator = newline_operator
-        self.input_prefix = input_prefix
-        self.input_postfix = input_postfix
-        self.output_prefix = output_prefix
-        self.output_postfix = output_postfix
+
+        if (description_prefix != ""):
+            self.description_prefix = description_prefix + " "
+        else:
+            self.description_prefix = ""
+        
+        if (description_postfix != ""):
+            self.description_postfix = " " + description_postfix
+        else:
+            self.description_postfix = ""
+
+        if (input_prefix != ""):
+            self.input_prefix = input_prefix + " "
+        else:
+            self.input_prefix = ""
+        
+        if (input_postfix != ""):
+            self.input_postfix =  " " + input_postfix
+        else:
+            self.input_postfix = ""
+
+        if (output_prefix != ""):
+            self.output_prefix = output_prefix + " "
+        else:
+            self.output_prefix = ""
+        
+        if (output_postfix != ""):
+            self.output_postfix = " " + output_postfix
+        else:
+            self.output_postfix = ""
 
 
 class PromptEngine(object):
@@ -53,12 +77,12 @@ class PromptEngine(object):
 
         return self.context
 
-    def build_prompt(self, natural_language: str, newlineEnd: bool = True):
+    def build_prompt(self, natural_language: str, newlineEnd: bool = False):
         """
         Builds the prompt from the parameters given to the Prompt Engine 
         """
         self.context = self.build_context()
-        prompt: str = self.context + self.config.input_prefix + " " + natural_language + self.config.input_postfix
+        prompt: str = self.context + self.config.input_prefix + natural_language + self.config.input_postfix
 
         if (newlineEnd):
             prompt += self.config.newline_operator
@@ -101,7 +125,7 @@ class PromptEngine(object):
         """
         temp_description_text = ""
         if (self.description != ""):
-            temp_description_text += self.config.description_prefix + " " + self.description + " " + self.config.description_postfix +  self.config.newline_operator
+            temp_description_text += self.config.description_prefix + self.description + self.config.description_postfix +  self.config.newline_operator
             temp_description_text += self.config.newline_operator
 
             if (self.__assert_token_limit(self.context + temp_description_text, self.config.model_config.max_tokens)):
@@ -116,8 +140,8 @@ class PromptEngine(object):
         temp_examples_text = ""
         if (self.examples != []):
             for example in self.examples:
-                temp_example_text = self.config.input_prefix + " " + example.natural_language + " " + self.config.input_postfix + self.config.newline_operator
-                temp_example_text += self.config.output_prefix + " " +  example.code + " " + self.config.output_postfix +  self.config.newline_operator*2
+                temp_example_text = self.config.input_prefix + example.natural_language + self.config.input_postfix + self.config.newline_operator
+                temp_example_text += self.config.output_prefix +  example.code + self.config.output_postfix +  self.config.newline_operator*2
             
                 if (self.__assert_token_limit(self.context + temp_example_text, self.config.model_config.max_tokens)):
                     raise Exception("""Token limit exceeded, reduce the number of examples or size of description. Alternatively, you may increase the max_tokens in ModelConfig
@@ -133,7 +157,7 @@ class PromptEngine(object):
         """
         temp_flow_reset_text = ""
         if (self.flow_reset_text != ""):
-            temp_flow_reset_text += self.config.description_prefix + " " + self.flow_reset_text + " " + self.config.description_postfix + self.config.newline_operator
+            temp_flow_reset_text += self.config.description_prefix + self.flow_reset_text + self.config.description_postfix + self.config.newline_operator
             temp_flow_reset_text += self.config.newline_operator
            
             if (self.__assert_token_limit(self.context + temp_flow_reset_text, self.config.model_config.max_tokens)):
@@ -149,8 +173,8 @@ class PromptEngine(object):
         temp_interactions_text = ""
         if (self.interactions != []):
             for interaction in self.interactions[::-1]:
-                temp_interaction_text = self.config.input_prefix + " " + interaction.natural_language + " " + self.config.input_postfix + self.config.newline_operator
-                temp_interaction_text += self.config.output_prefix + " " +  interaction.code + " " + self.config.output_postfix +  self.config.newline_operator*2
+                temp_interaction_text = self.config.input_prefix + interaction.natural_language + self.config.input_postfix + self.config.newline_operator
+                temp_interaction_text += self.config.output_prefix +  interaction.code + self.config.output_postfix +  self.config.newline_operator*2
 
                 if (self.__assert_token_limit(self.context + temp_interaction_text, self.config.model_config.max_tokens)):
                     raise Warning("Token limit exceeded, skipping the least recent interaction")

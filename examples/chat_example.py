@@ -1,12 +1,11 @@
-from prompt_engine.prompt_engine import PromptEngine, PromptEngineConfig
+from prompt_engine.chat_engine import ChatEngine, ChatEngineConfig
 from prompt_engine.model_config import ModelConfig
 from prompt_engine.interaction import Interaction
 
-config = PromptEngineConfig(ModelConfig(max_tokens=50), description_prefix = "###")
-description = "This code takes in natural language utterance and generates code This code takes in natural language utterance and generates code"
-examples = [Interaction("Hello", "print('Hello')"), Interaction("Goodbye", "print('Goodbye')")]
-flow_reset_text = "Delete the previous objects and start afresh"
-interactions = [Interaction("Hi", "print('Hi')"), Interaction("Bye", "print('Bye')")]
-prompt_engine = PromptEngine(config, description, examples, flow_reset_text, interactions)
+config = ChatEngineConfig(ModelConfig(max_tokens=50))
+description = "Convert the given english to french"
+examples = [Interaction("Hello", "Bonjour"), Interaction("Goodbye", "Au revoir")]
+interactions = [Interaction("I am going", "Je vais"), Interaction("great", "génial")]
+chat_engine = ChatEngine(config=config, description=description, examples=examples, interactions=interactions)
 
-print (prompt_engine.build_context())
+print (chat_engine.build_prompt("I am going"))
