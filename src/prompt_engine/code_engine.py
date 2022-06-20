@@ -3,14 +3,14 @@ from prompt_engine.model_config import ModelConfig
 from prompt_engine.interaction import Interaction
 
 class CodeEngineConfig(PromptEngineConfig):
-    def __init__(self, model_config: ModelConfig = None, description_prefix: str = "### ", description_postfix: str = "###", newline_operator: str = "\n",
+    def __init__(self, model_config: ModelConfig = None, description_prefix: str = "###", description_postfix: str = "", newline_operator: str = "\n",
                  input_prefix: str = "##", input_postfix: str = "", output_prefix: str = "", output_postfix: str = ""):
         super().__init__(model_config = model_config, description_prefix = description_prefix, description_postfix = description_postfix, newline_operator = newline_operator,
                                 input_prefix = input_prefix, input_postfix = input_postfix, output_prefix = output_prefix, output_postfix = output_postfix)
 
-class JavaScriptCodeEngineConfig(CodeEngineConfig):
+class JavascriptCodeEngineConfig(CodeEngineConfig):
     """
-    This class provides the configuration for the Code Engine
+    This class provides the configuration for the Javascript Code Engine
     """
     def __init__(self, model_config: ModelConfig = None, description_prefix: str = "/*/", description_postfix: str = "/*/", newline_operator: str = "\n",
                  input_prefix: str = "/*", input_postfix: str = "*/", output_prefix: str = "", output_postfix: str = ""):
@@ -19,9 +19,9 @@ class JavaScriptCodeEngineConfig(CodeEngineConfig):
 
 class PythonCodeEngineConfig(CodeEngineConfig):
     """
-    This class provides the configuration for the Code Engine
+    This class provides the configuration for the Python Code Engine
     """
-    def __init__(self, model_config: ModelConfig = None, description_prefix: str = "### ", description_postfix: str = "###", newline_operator: str = "\n",
+    def __init__(self, model_config: ModelConfig = None, description_prefix: str = "###", description_postfix: str = "", newline_operator: str = "\n",
                  input_prefix: str = "##", input_postfix: str = "", output_prefix: str = "", output_postfix: str = ""):
         super().__init__(model_config = model_config, description_prefix = description_prefix, description_postfix = description_postfix, newline_operator = newline_operator,
                                 input_prefix = input_prefix, input_postfix = input_postfix, output_prefix = output_prefix, output_postfix = output_postfix)
