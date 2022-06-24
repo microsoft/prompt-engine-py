@@ -3,7 +3,7 @@ from src.prompt_engine.model_config import ModelConfig
 from src.prompt_engine.interaction import Interaction
 
 def test_pass():
-    config = ChatEngineConfig(ModelConfig(max_tokens=50))
+    config = ChatEngineConfig(ModelConfig(max_tokens=1024))
     description = "Convert the given english to french"
     examples = [Interaction("Hello", "Bonjour"), Interaction("Goodbye", "Au revoir")]
     interactions = [Interaction("I am going", "Je vais"), Interaction("great", "génial")]

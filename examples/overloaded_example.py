@@ -13,7 +13,7 @@ class PromptEngineOverloaded(PromptEngine):
                     self.context += self.config.newline_operator
                     self.context += example.code + self.config.newline_operator
 
-config = PromptEngineConfig(ModelConfig(max_tokens=50), description_prefix = "###")
+config = PromptEngineConfig(ModelConfig(max_tokens=1024), description_prefix = "###")
 description = "This code takes in natural language utterance and generates code This code takes in natural language utterance and generates code"
 examples = [Interaction("Hello", "print('Hello')"), Interaction("Goodbye", "print('Goodbye')")]
 interactions = [Interaction("Hi", "print('Hi')"), Interaction("Bye", "print('Bye')")]

@@ -3,7 +3,7 @@ from src.prompt_engine.model_config import ModelConfig
 from src.prompt_engine.interaction import Interaction
 
 def test_pass():
-    config = PythonCodeEngineConfig(ModelConfig(max_tokens=50))
+    config = PythonCodeEngineConfig(ModelConfig(max_tokens=1024))
     description = "Convert the given natural language to code"
     examples = [Interaction("open window", "executeCommand.open('window')"), Interaction("show window", "executeCommand.show('window')")]
     interactions = [Interaction("hide window", "executeCommand.hide('window')"), Interaction("hide sidebar", "executeCommand.hide('sidebar')")]

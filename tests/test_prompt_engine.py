@@ -3,7 +3,7 @@ from src.prompt_engine.model_config import ModelConfig
 from src.prompt_engine.interaction import Interaction
 
 def test_pass():
-    config = PromptEngineConfig(ModelConfig(max_tokens=100), description_prefix = "###")
+    config = PromptEngineConfig(ModelConfig(max_tokens=1024), description_prefix = "###")
     description = "This code takes in nl"
     examples = [Interaction("Hello", "print('Hello')"), Interaction("Goodbye", "print('Goodbye')")]
     interactions = [Interaction("Hi", "print('Hi')"), Interaction("Bye", "print('Bye')")]
