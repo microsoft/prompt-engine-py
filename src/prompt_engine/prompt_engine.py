@@ -25,12 +25,12 @@ class PromptEngine(object):
     """
     Prompt Engine provides a reusable interface for the developer to construct prompts for large scale language model inference
     """
-    def __init__(self, config: PromptEngineConfig, description: str, examples: List[Interaction] = [], flow_reset_text: str = "", interactions: List[Interaction] = []):
+    def __init__(self, config: PromptEngineConfig = PromptEngineConfig(), description: str = "", examples: List[Interaction] = [], flow_reset_text: str = "", interactions: List[Interaction] = []):
         self.config = config
         self.description = description
         self.examples = examples
         self.flow_reset_text = flow_reset_text
-        self.interactions = interactions
+        self.dialog = interactions
 
     def build_context(self, user_input: str = ""):
         """
@@ -65,26 +65,26 @@ class PromptEngine(object):
 
         return prompt
 
-    def add_example(self, natural_language: str, content: str):
+    def add_example(self, input: str, response: str):
         """
         Adds an interaction to the example
         """
-        example = Interaction(natural_language, content)
+        example = Interaction(input, response)
         self.examples.append(example)
     
-    def add_interaction(self, natural_language: str, content: str):
+    def add_interaction(self, input: str, response: str):
         """
         Adds an interaction to the interactions
         """
-        interaction = Interaction(natural_language, content)
-        self.interactions.append(interaction)
+        interaction = Interaction(input, response)
+        self.dialog.append(interaction)
 
     def remove_last_interaction(self):
         """
         Removes the last interaction from the interactions
         """
-        if (len(self.interactions) > 0):
-            return self.interactions.pop()
+        if (len(self.dialog) > 0):
+            return self.dialog.pop()
         else:
             raise Exception("No interactions to remove")
 
@@ -92,8 +92,8 @@ class PromptEngine(object):
         """
         Removes the first interaction from the interactions
         """
-        if (len(self.interactions) > 0):
-            return self.interactions.pop(0)
+        if (len(self.dialog) > 0):
+            return self.dialog.pop(0)
         else:
             raise Exception("No interactions to remove")
 
@@ -120,8 +120,8 @@ class PromptEngine(object):
         temp_examples_text = ""
         if (self.examples != []):
             for example in self.examples:
-                temp_example_text = self.config.input_prefix + example.natural_language + self.config.input_postfix + self.config.newline_operator
-                temp_example_text += self.config.output_prefix +  example.code + self.config.output_postfix +  self.config.newline_operator*2
+                temp_example_text = self.config.input_prefix + example.input + self.config.input_postfix + self.config.newline_operator
+                temp_example_text += self.config.output_prefix +  example.response + self.config.output_postfix +  self.config.newline_operator*2
             
                 if (self._assert_token_limit(context + temp_example_text, user_input, self.config.model_config.max_tokens)):
                     raise Exception("""Token limit exceeded, reduce the number of examples or size of description. Alternatively, you may increase the max_tokens in ModelConfig
@@ -154,10 +154,10 @@ class PromptEngine(object):
         Inserts the interactions into the context
         """
         temp_interactions_list = []
-        if (self.interactions != []):
-            for interaction in self.interactions[::-1]:
-                temp_interaction_text = self.config.input_prefix + interaction.natural_language + self.config.input_postfix + self.config.newline_operator
-                temp_interaction_text += self.config.output_prefix +  interaction.code + self.config.output_postfix +  self.config.newline_operator*2
+        if (self.dialog != []):
+            for interaction in self.dialog[::-1]:
+                temp_interaction_text = self.config.input_prefix + interaction.input + self.config.input_postfix + self.config.newline_operator
+                temp_interaction_text += self.config.output_prefix +  interaction.response + self.config.output_postfix +  self.config.newline_operator*2
 
                 if (self._assert_token_limit(context + temp_interaction_text, user_input, self.config.model_config.max_tokens)):
                     break

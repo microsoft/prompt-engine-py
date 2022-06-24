@@ -9,9 +9,9 @@ class PromptEngineOverloaded(PromptEngine):
             """
             if (self.examples != []):
                 for example in self.examples:
-                    self.context += self.config.input_prefix + "This is an example: " + example.natural_language + self.config.input_postfix
+                    self.context += self.config.input_prefix + "This is an example: " + example.input + self.config.input_postfix
                     self.context += self.config.newline_operator
-                    self.context += example.code + self.config.newline_operator
+                    self.context += example.response + self.config.newline_operator
 
 config = PromptEngineConfig(ModelConfig(max_tokens=1024), description_prefix = "###")
 description = "This code takes in natural language utterance and generates code This code takes in natural language utterance and generates code"

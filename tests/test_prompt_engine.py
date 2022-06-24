@@ -72,9 +72,9 @@ def test_pass_overriding_insert_examples():
             """
             if (self.examples != []):
                 for example in self.examples:
-                    context += self.config.input_prefix + "This is an example: " + example.natural_language + self.config.input_postfix
+                    context += self.config.input_prefix + "This is an example: " + example.input + self.config.input_postfix
                     context += self.config.newline_operator
-                    context += example.code + self.config.newline_operator
+                    context += example.response + self.config.newline_operator
             return context
 
     prompt_engineOverloaded = PromptEngineOverloaded(config, description, examples=examples)

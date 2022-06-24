@@ -96,7 +96,7 @@ These are the prebuilt functions that are provided by the prompt_engine library
 | `build_context` | None | Constructs and return the context with parameters provided to the Prompt Engine |
 | `build_prompt` | Prompt: str | Uses the context constructed by the build context function and generates a prompt to query  |
 | `truncate_prompt` | max_tokens: int |Truncates the prompt to the max_tokens limit|
-| `add_interaction` | interaction: Interaction(natural_language: str, code: str) | Adds the given natural language - code interaction to the interactionss |
+| `add_interaction` | interaction: Interaction(input: str, code: str) | Adds the given natural language - code interaction to the interactionss |
 | `remove_first_interaction` | None | Removes the first/most historical interaction added to the interactionss |
 | `remove_last_interaction` | None | Removes the last interaction added to the interactionss |
 
@@ -115,9 +115,9 @@ class PromptEngineOverloaded(PromptEngine):
             """
             if (self.examples != []):
                 for example in self.examples:
-                    self.context += self.config.input_prefix + "This is an example: " + example.natural_language + self.config.input_postfix
+                    self.context += self.config.input_prefix + "This is an example: " + example.input + self.config.input_postfix
                     self.context += self.config.newline_operator
-                    self.context += example.code + self.config.newline_operator
+                    self.context += example.response + self.config.newline_operator
 .
 .
 .

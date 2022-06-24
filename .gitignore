@@ -1,2 +1,5 @@
 dist
 src/prompt_engine/__pycache__
+tests/__pycache__
+src/prompt_engine.egg-info
+.pytest_cache

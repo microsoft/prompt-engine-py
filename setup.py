@@ -8,12 +8,12 @@ setuptools.setup(
     version="0.0.1",
     author="Abhishek Masand",
     author_email="amasand@microsoft.com",
-    description="A small example package",
+    description="This package provides an easy and reusable interface to build prompts for large scale language models (LLMs).",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/pypa/sampleproject",
+    url="https://github.com/microsoft/prompt_engine_python",
     project_urls={
-        "Bug Tracker": "https://github.com/pypa/sampleproject/issues",
+        "Bug Tracker": "https://github.com/microsoft/prompt_engine_python/issues",
     },
     classifiers=[
         "Programming Language :: Python :: 3",
