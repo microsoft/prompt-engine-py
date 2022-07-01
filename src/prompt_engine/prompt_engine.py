@@ -25,12 +25,12 @@ class PromptEngine(object):
     """
     Prompt Engine provides a reusable interface for the developer to construct prompts for large scale language model inference
     """
-    def __init__(self, config: PromptEngineConfig = PromptEngineConfig(), description: str = "", examples: List[Interaction] = [], flow_reset_text: str = "", interactions: List[Interaction] = []):
+    def __init__(self, config: PromptEngineConfig = PromptEngineConfig(), description: str = "", examples: List[Interaction] = [], flow_reset_text: str = "", dialog: List[Interaction] = []):
         self.config = config
         self.description = description
         self.examples = examples
         self.flow_reset_text = flow_reset_text
-        self.dialog = interactions
+        self.dialog = dialog
 
     def build_context(self, user_input: str = ""):
         """
