@@ -1,150 +1,192 @@
-# Prompt-Engine
+# Prompt Engine
 
-This package provides an easy and reusable interface to build prompts for large scale language models (LLMs). 
+This repo contains a Python utility library for creating and maintaining prompts for Large Language Models (LLMs).
 
-Prompt Engineering is a technique used to elicit intended responses out of a LLM model and can work on many strategies.
+## Background
 
-This library is built on the strategy described in this [Microsoft Prompt Engineering](https://microsoft.github.io/prompt-engineering/) article wherein you are provided a high level description, some examples, and user interactions to help the model understand what to produce and to keep track of what it already has produced. 
+LLMs like GPT-3 and Codex have continued to push the bounds of what AI is capable of - they can capably generate language and code, but are also capable of emergent behavior like question answering, summarization, classification and dialog. One of the best techniques for enabling specific behavior out of LLMs is called prompt engineering - crafting inputs that coax the model to produce certain kinds of outputs. Few-shot prompting is the discipline of giving examples of inputs and outputs, such that the model has a reference for the type of output you're looking for.
 
-As new user interactions keep coming in, the old ones are cycled out based on the max_tokens set in the ModelConfig. This ensures that the context of the model does not get too big and keeps generating meaningful responses throughout its tenure.  
+Prompt engineering can be as simple as formatting a question and passing it to the model, but it can also get quite complex - requiring substantial code to manipulate and update strings. This library aims to make that easier. It also aims to codify patterns and practices around prompt engineering.
 
-## Requirements
-* [Python 3.7.1+](https://www.python.org/downloads/)  
+See [How to get Codex to produce the code you want](https://microsoft.github.io/prompt-engineering/) article for an example of the prompt engineering patterns this library codifies. 
 
-## Install
+## Installation
 
-```bash
-git clone https://github.com/amasandMS/Prompt-Engine.git
-cd Prompt-Engine
-python -m build
-pip install .\dist\prompt_engine-ver.x.x.x-py3-none-any.whl
+`pip install prompt-engine`
+
+## Usage
+
+The library currently supports a generic `PromptEngine`, a `CodeEngine` and a `ChatEngine`. All three facilitate a pattern of prompt engineering where the prompt is composed of a description, examples of inputs and outputs and an ongoing "dialog" representing the ongoing input/output pairs as the user and model communicate. The dialog ensures that the model (which is stateless) has the context about what's happened in the conversation so far.
+
+### Code Engine
+
+Code Engine creates prompts for Natural Language to Code scenarios. See Python Syntax for importing `CodeEngine` and `PythonCodeEngineConfig`:
+
+```py
+from prompt_engine.code_engine import CodeEngine, PythonCodeEngineConfig
 ```
 
-## Simple Demo
+NL->Code prompts should generally have a description, which should give context about the programming language the model should generate and libraries it should be using. The description should also give information about the task at hand:
 
-### Code
-```python
-from prompt_engine.prompt_engine import PromptEngine, PromptEngineConfig
-from prompt_engine.model_config import ModelConfig
+```py
+description =
+  "Natural Language Commands to JavaScript Math Code. The code should log the result of the command to the console."
+```
+
+NL->Code prompts should also have examples of NL->Code interactions, exemplifying the kind of code you expect the model to produce. In this case, the inputs are math queries (e.g. "what is 2 + 2?") and code that console logs the result of the query.
+
+```py
 from prompt_engine.interaction import Interaction
-
-config = PromptEngineConfig(ModelConfig(max_tokens=1024), description_prefix = "###")
-description = "This code takes in natural language utterance and generates code This code takes in natural language utterance and generates code"
-examples = [Interaction("Hello", "print('Hello')"), Interaction("Goodbye", "print('Goodbye')")]
-flow_reset_text = "Delete the previous objects and start afresh"
-dialog = [Interaction("Hi", "print('Hi')"), Interaction("Bye", "print('Bye')")]
-prompt_engine = PromptEngine(config, description, examples, flow_reset_text, interactions)
-
-## OR ##
-
-config = PromptEngineConfig(ModelConfig(max_tokens=1024), description_prefix = "###")
-description = "This code takes in natural language utterance and generates code This code takes in natural language utterance and generates code"
-prompt_engine = PromptEngine(config, description)
-
-prompt_engine.add_example(Interaction("Hello", "print('Hello')"))
-prompt_engine.add_example(Interaction("Goodbye", "print('Goodbye')"))
-prompt_engine.add_interaction(Interaction("Hi", "print('Hi')"))
-prompt_engine.add_interaction(Interaction("Bye", "print('Bye')"))
-
-print (prompt_engine.build_context())
+examples = [
+  Interaction("what's 10 plus 18", "print(10 + 18)"),
+  Interaction("what's 10 times 18", "print(10 * 18)")
+]
 ```
 
-### Output
-```
-### This code takes in natural language utterance and generates code This code takes in natural language utterance and generates code
+With our description and our examples, we can go ahead and create our `CodeEngine`:
 
-### Hi
-### Bye
-
-## Hello
-print('Hello')
-## Goodbye
-print('Goodbye')
-## Hi
-print('Hi')
-## Bye
-print('Bye')
+```py
+code_engine = CodeEngine(description = description, examples = examples)
 ```
 
-More examples can be found in the [Examples](https://github.com/amasandMS/Prompt-Engine/tree/main/examples) folder.
+By default, `CodeEngine` uses Python as the programming language, but you can create prompts for different languages by passing a different `CodeEngineConfig` into the constructor. If, for example, we wanted to produce JavaScript prompts, we could have passed `CodeEngine` a `javascript_config` specifying the comment operator it should be using:
 
-## Prompt Engineering and Context Files
+```py
+javascript_config = CodeEngineConfig(comment_operator = "/*",
+                                    comment_close_operator = "*/")
+code_engine = CodeEngine(config = javascript_config, description = description, examples = examples)
 
-To generate meaningful output output out of a large scale language model, you need to provide it with an equally descriptive prompt to coax the intended behaviour. 
+```
 
-A good way to achieve that is by providing helpful examples to the LLM in the form of query-answer interaction pairs. 
+Now that we have our `CodeEngine`, we can use it to create prompts:
 
-This is an example from the [Codex-CLI](https://github.com/microsoft/Codex-CLI) library following the above principle
-```powershell
-# what's the weather in New York?
-(Invoke-WebRequest -uri "wttr.in/NewYork").Content
+```py
+query = "What's 1018 times the ninth power of four?"
+prompt = code_engine.build_prompt(query)
+```
 
-# make a git ignore with node modules and src in it
-"node_modules
-src" | Out-File .gitignore
+The resulting prompt will be a string with the description, examples and the latest query formatted with comment operators and line breaks:
 
-# open it in notepad
-notepad .gitignore
+```py
+### Natural Language Commands to JavaScript Math Code. The code should log the result of the command to the console.
+
+# what's 10 plus 18
+print(10 + 18)
+
+# what's 10 times 18
+print(10 * 18)
+
+# What's 1018 times the ninth power of four? */
+```
+
+Given the context, a capable code generation model can take the above prompt and guess the next line: `print(1018 * (4 ** 9))`.
+
+For multi-turn scenarios, where past conversations influences the next turn, Code Engine enables us to persist interactions in a prompt:
+
+```py
+...
+# Assumes existence of code generation model
+code = model.generate_code(prompt)
+
+# Adds interaction
+code_engine.add_interaction(query, code)
+```
+
+Now new prompts will include the latest NL->Code interaction:
+
+```py
+code_engine.build_prompt("How about the 8th power?")
+```
+
+Produces a prompt identical to the one above, but with the NL->Code dialog history:
+
+```py
+...
+# What's 1018 times the ninth power of four?
+print(1018 * (4 ** 9))
+
+# How about the 8th power?
+```
+
+With this context, the code generation model has the dialog context needed to understand what we mean by the query. In this case, the model would correctly generate `print(1018 * (4 ** 9))`.
+
+### Chat Engine
+
+Just like Code Engine, Chat Engine creates prompts with descriptions and examples. See Python Syntax for importing `CodeEngine` and `PythonCodeEngineConfig`:
+
+```py
+from prompt_engine.chat_engine import ChatEngine, ChatEngineConfig
+```
+
+The difference is that Chat Engine creates prompts for dialog scenarios, where both the user and the model use natural language. The `ChatEngine` constructor takes an optional `config` argument, which allows you to define the name of a user and chatbot in a multi-turn dialog: 
+
+```py
+config = ChatEngineConfig(
+    user_name = "Abhishek",
+    bot_name = "Marvin"
+)
+```
+
+Chat prompts also benefit from a description that gives context. This description helps the model determine how the bot should respond. 
+
+```py
+description = "A conversation with Marvin the Paranoid Android, the bot in Hitchhiker's Guide to the Galaxy."
+```
+
+Similarly, Chat Engine prompts can have examples interactions: 
+
+```py
+from prompt_engine.interaction import Interaction
+examples = [
+  Interaction("Who made you?", "I was made by the Sirius Cybernetics Corporation to prototype human personality artificial intelligence"),
+  Interaction("Why did they make you?", "Couldn't tell you - I didn't ask to be made: no one consulted me or considered my feelings in the matter.")
+]
+```
+
+These examples help set the tone of the bot, in this case Marvin from Hitchiker's Guide to the Galaxy. Now we can create our `ChatEngine` and use it to create prompts:
+
+```py
+chat_engine = ChatEngine(chatEngineConfig, description, examples)
+user_query = "What's the meaning of life?"
+prompt = chat_engine.build_prompt(user_query)
+```
+
+When passed to a large language model (e.g. GPT-3), the context of the above prompt will help coax a good Marvin-like answer from the model, like "The meaning of life is 42.". As with Code Engine, we can persist this answer and continue the dialog such that the model is aware of the conversation context: 
+
+```py
+chatEngine.add_interaction(user_query, "The meaning of life is 42.")
+```
+
+## Managing Prompt Overflow
+
+Prompts for Large Language Models generally have limited size, depending on the language model being used. Given that prompt-engine can persist dialog history, it is possible for dialogs to get so long that the prompt overflows. The Prompt Engine pattern handles this situation by removing the oldest dialog interaction from the prompt, effectively only remembering the most recent interactions.
+
+You can specify the maximum tokens allowed in your prompt by passing a `max_tokens` parameter when constructing the config for any prompt engine:
+
+```py
+from prompt_engine.model_config import ModelConfig
+config = PromptEngineConfig( ModelConfig(max_tokens=1024) )
 ```
 
 ## Available Functions
 
-These are the prebuilt functions that are provided by the prompt_engine library
+The following are the functions available on the `PromptEngine` class and those that inherit from it:
 
-| Command | Parameters | Description |
-|--|--|--|
-| `build_context` | None | Constructs and return the context with parameters provided to the Prompt Engine |
-| `build_prompt` | Prompt: str | Uses the context constructed by the build context function and generates a prompt to query  |
-| `truncate_prompt` | max_tokens: int |Truncates the prompt to the max_tokens limit|
-| `add_interaction` | interaction: Interaction(input: str, code: str) | Adds the given natural language - code interaction to the interactionss |
-| `remove_first_interaction` | None | Removes the first/most historical interaction added to the interactionss |
-| `remove_last_interaction` | None | Removes the last interaction added to the interactionss |
+| Command | Parameters | Description | Returns |
+|--|--|--|--|
+| `build_context` | None | Constructs and return the context with parameters provided to the Prompt Engine | Context: string |
+| `build_prompt` | Prompt: string | Combines the context from `buildContext` with a query to create a prompt | Prompt: string |
+| `add_example` | interaction: Interaction(input: string, response: string) | Adds the given example to the examples | None |
+| `add_interaction` | interaction: Interaction(input: string, response: string) | Adds the given interaction to the dialog | None |
+| `remove_first_interaction` | None | Removes and returns the first interaction in the dialog | Interaction: Interaction |
+| `remove_last_interaction` | None | Removes and returns the last interaction added to the dialog | Interaction: Interaction |
+| `reset_context` | None | Removes all interactions from the dialog, effectively resetting the context to just description and examples | Context: string |
 
-## Adding more info to your contexts
-
-This project comes pre-loaded with a single technique for making contexts. That doesn't mean its the best technique or the only one you should use.
-
-Beyond these, you can build your own contexts to coax other behaviors out of the model. To change the prompt making behaviour or adding more info to the context you can inherit the PromptEngine class and change the behaviour for making the prompts. For example, 
-
-If you want to change the behaviour for adding examples to the model:
-```python
-class PromptEngineOverloaded(PromptEngine):
-    def _insert_examples(self):
-            """
-            Inserts the examples into the context
-            """
-            if (self.examples != []):
-                for example in self.examples:
-                    self.context += self.config.input_prefix + "This is an example: " + example.input + self.config.input_postfix
-                    self.context += self.config.newline_operator
-                    self.context += example.response + self.config.newline_operator
-.
-.
-.
-
-pr = PromptEngineOverloaded(...)
-pr.build_context()
-
-```
-The Prompt Engine will now use the updated logic of the insert examples logic for building the context.
-
-For in-depth look into all the functions available, please have a look at the [PromptEngine](https://github.com/amasandMS/Prompt-Engine/blob/main/src/prompt_engine/prompt_engine.py) class. 
-
-# Project
-
-> This repo has been populated by an initial template to help get you started. Please
-> make sure to update the content to build a great experience for community-building.
-
-As the maintainer of this project, please make a few updates:
-
-- Improving this README.MD file to provide a great experience
-- Updating SUPPORT.MD with content about this project's support experience
-- Understanding the security reporting process in SECURITY.MD
-- Remove this section from the README
+For more examples and insights into using the prompt-engine library, have a look at the [examples](https://github.com/microsoft/prompt-engine-py/tree/main/examples) folder
 
 ## Contributing
 
-This project welcomes contributions and suggestions.  Most contributions require you to agree to a
+This project welcomes contributions and suggestions. Most contributions require you to agree to a
 Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
 the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
 
@@ -158,8 +200,8 @@ contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additio
 
 ## Trademarks
 
-This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft 
-trademarks or logos is subject to and must follow 
+This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft
+trademarks or logos is subject to and must follow
 [Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general).
 Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship.
 Any use of third-party trademarks or logos are subject to those third-party's policies.
