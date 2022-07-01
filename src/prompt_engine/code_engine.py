@@ -31,5 +31,5 @@ class CodeEngine(PromptEngine):
     """
     Code Engine provides a PromptEngine to construct nl-to-code prompts for large scale language model inference
     """
-    def __init__(self, config: CodeEngineConfig, description: str, examples: list = [], flow_reset_text = "", interactions: list = []):
-        super().__init__(config = config, description = description, examples = examples, flow_reset_text = flow_reset_text, interactions = interactions)
+    def __init__(self, config: CodeEngineConfig, description: str, examples: list = [], flow_reset_text = "", dialog: list = []):
+        super().__init__(config = config, description = description, examples = examples, flow_reset_text = flow_reset_text, dialog = dialog)
