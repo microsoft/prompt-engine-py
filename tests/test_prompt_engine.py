@@ -105,6 +105,17 @@ def test_pass_flow_reset_text():
     prompt_engine = PromptEngine(config, description, interactions=interactions, flow_reset_text=flow_reset_text, examples=examples)
     assert prompt_engine.build_context() == "# Trial Description\n\n## Hello\nprint('Hello')\n\n## Goodbye\nprint('Goodbye')\n\n# This is the flow reset text\n\n## Hi\nprint('Hi')\n\n## Bye\nprint('Bye')\n\n"
 
+def test_pass_reset_context():
+    config = PromptEngineConfig()
+    description = "Trial Description"
+    examples = [Interaction("Hello", "print('Hello')"), Interaction("Goodbye", "print('Goodbye')")]
+    prompt_engine = PromptEngine(config, description, examples=examples)
+
+    prompt_engine.add_interaction("Hi", "print('Hi')")
+    assert prompt_engine.build_context() == "# Trial Description\n\n## Hello\nprint('Hello')\n\n## Goodbye\nprint('Goodbye')\n\n## Hi\nprint('Hi')\n\n"
+
+    assert prompt_engine.reset_context() == "# Trial Description\n\n## Hello\nprint('Hello')\n\n## Goodbye\nprint('Goodbye')\n\n"
+
 def test_pass_masterIntegrationTest():
     config = PromptEngineConfig()
     description = ""

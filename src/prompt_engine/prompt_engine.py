@@ -169,6 +169,10 @@ class PromptEngine(object):
         
         return context
     
+    def reset_context(self):
+        self.dialog = []
+        return self.build_context()
+
     def _assert_token_limit(self, context: str, user_input: str = "", max_tokens: int = 1024):
         """
         Asserts that the number of tokens in the context is less than the max_tokens
