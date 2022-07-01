@@ -17,6 +17,6 @@ config = PromptEngineConfig(ModelConfig(max_tokens=1024), description_prefix = "
 description = "This code takes in natural language utterance and generates code This code takes in natural language utterance and generates code"
 examples = [Interaction("Hello", "print('Hello')"), Interaction("Goodbye", "print('Goodbye')")]
 dialog = [Interaction("Hi", "print('Hi')"), Interaction("Bye", "print('Bye')")]
-prompt_engine = PromptEngineOverloaded(config, description, examples, interactions)
+prompt_engine = PromptEngineOverloaded(config, description, examples, dialog)
 
 print (prompt_engine.build_context())
