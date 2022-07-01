@@ -29,8 +29,7 @@ from prompt_engine.code_engine import CodeEngine, PythonCodeEngineConfig
 NL->Code prompts should generally have a description, which should give context about the programming language the model should generate and libraries it should be using. The description should also give information about the task at hand:
 
 ```py
-description =
-  "Natural Language Commands to JavaScript Math Code. The code should log the result of the command to the console."
+description = "Natural Language Commands to JavaScript Math Code. The code should log the result of the command to the console."
 ```
 
 NL->Code prompts should also have examples of NL->Code interactions, exemplifying the kind of code you expect the model to produce. In this case, the inputs are math queries (e.g. "what is 2 + 2?") and code that console logs the result of the query.
@@ -43,19 +42,19 @@ examples = [
 ]
 ```
 
+By default, `CodeEngine` uses Python as the programming language, but you can create prompts for different languages by passing a different `CodeEngineConfig` into the constructor. If, for example, we wanted to produce JavaScript prompts, we could have passed `CodeEngine` a `javascript_config` specifying the comment operator it should be using:
+
+```py
+javascript_config = CodeEngineConfig(description_comment_operator = "/*/", description_comment_close_operator = "/*/", 
+                                     comment_operator = "/*", comment_close_operator = "*/")
+code_engine = CodeEngine(config = javascript_config, description = description, examples = examples)
+
+```
+
 With our description and our examples, we can go ahead and create our `CodeEngine`:
 
 ```py
 code_engine = CodeEngine(description = description, examples = examples)
-```
-
-By default, `CodeEngine` uses Python as the programming language, but you can create prompts for different languages by passing a different `CodeEngineConfig` into the constructor. If, for example, we wanted to produce JavaScript prompts, we could have passed `CodeEngine` a `javascript_config` specifying the comment operator it should be using:
-
-```py
-javascript_config = CodeEngineConfig(comment_operator = "/*",
-                                    comment_close_operator = "*/")
-code_engine = CodeEngine(config = javascript_config, description = description, examples = examples)
-
 ```
 
 Now that we have our `CodeEngine`, we can use it to create prompts:
@@ -175,7 +174,7 @@ The following are the functions available on the `PromptEngine` class and those 
 | Command | Parameters | Description | Returns |
 |--|--|--|--|
 | `build_context` | None | Constructs and return the context with parameters provided to the Prompt Engine | Context: string |
-| `build_prompt` | Prompt: string | Combines the context from `buildContext` with a query to create a prompt | Prompt: string |
+| `build_prompt` | Prompt: string | Combines the context from `build_context` with a query to create a prompt | Prompt: string |
 | `add_example` | interaction: Interaction(input: string, response: string) | Adds the given example to the examples | None |
 | `add_interaction` | interaction: Interaction(input: string, response: string) | Adds the given interaction to the dialog | None |
 | `remove_first_interaction` | None | Removes and returns the first interaction in the dialog | Interaction: Interaction |
