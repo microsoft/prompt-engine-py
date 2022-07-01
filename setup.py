@@ -4,11 +4,11 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="prompt_engine",
+    name="prompt-engine",
     version="0.0.1",
     author="Abhishek Masand",
     author_email="amasand@microsoft.com",
-    description="This package provides an easy and reusable interface to build prompts for large scale language models (LLMs).",
+    description="This package is a utility library for creating and maintaining prompts for Large Language Models (LLMs).",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/microsoft/prompt_engine_python",
