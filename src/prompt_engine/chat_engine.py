@@ -9,7 +9,7 @@ class ChatEngineConfig(PromptEngineConfig):
     def __init__(self, model_config: ModelConfig = None,
                  user_name: str = "USER", bot_name: str = "BOT"):
         super().__init__(model_config = model_config, description_prefix = "", description_postfix = "", newline_operator = "\n",
-                                input_prefix = user_name + ": ", input_postfix = "", output_prefix = bot_name + ": ", output_postfix = "")
+                                input_prefix = user_name + ":", input_postfix = "", output_prefix = bot_name + ":", output_postfix = "")
 
 class ChatEngine(PromptEngine):
     """
