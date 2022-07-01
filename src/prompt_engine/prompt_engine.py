@@ -6,8 +6,8 @@ class PromptEngineConfig:
     """
     This class provides the configuration for the Prompt Engine
     """
-    def __init__(self, model_config: ModelConfig = ModelConfig(max_tokens=1024), description_prefix: str = "#", description_postfix: str = "", newline_operator: str = "\n",
-                 input_prefix: str = "##", input_postfix: str = "", output_prefix: str = "", output_postfix: str = ""):
+    def __init__(self, model_config: ModelConfig = ModelConfig(max_tokens=1024), description_prefix: str = "", description_postfix: str = "", newline_operator: str = "\n",
+                 input_prefix: str = "", input_postfix: str = "", output_prefix: str = "", output_postfix: str = ""):
                  
         self.model_config = model_config
         self.newline_operator = newline_operator
