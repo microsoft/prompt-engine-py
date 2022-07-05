@@ -65,7 +65,7 @@ class PromptEngine(object):
 
         return prompt
 
-    def build_interactions(self):
+    def build_dialog(self):
         temp_interactions = ""
         if (self.dialog != []):
             for interaction in self.dialog:
