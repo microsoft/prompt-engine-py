@@ -23,4 +23,5 @@ setuptools.setup(
     package_dir={"": "src"},
     packages=setuptools.find_packages(where="src"),
     python_requires=">=3.6",
+    package_data={'prompt_engine': ['utils/encoder.json', 'utils/vocab.bpe']},
 )
