@@ -87,6 +87,14 @@ def test_pass_build_prompt():
     prompt_engine = PromptEngine(config, description, dialog=dialog)
     assert prompt_engine.build_prompt("Hello") == "## Hi\nprint('Hi')\n\n## Bye\nprint('Bye')\n\n## Hello\n"
 
+def test_pass_build_interactions():
+    config = PromptEngineConfig(description_prefix = "###", input_prefix = "##", output_prefix = "")
+    description = "Trial Description"
+    examples = [Interaction("Hello", "print('Hello')"), Interaction("Goodbye", "print('Goodbye')")]
+    dialog = [Interaction("Hi", "print('Hi')"), Interaction("Bye", "print('Bye')")]
+    prompt_engine = PromptEngine(config, description, examples = examples, dialog=dialog)
+    assert prompt_engine.build_interactions() == "## Hi\nprint('Hi')\n\n## Bye\nprint('Bye')\n\n"
+
 def test_pass_add_example():
     config = PromptEngineConfig(description_prefix = "###", input_prefix = "##", output_prefix = "")
     description = ""
