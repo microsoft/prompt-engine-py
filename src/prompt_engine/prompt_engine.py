@@ -65,6 +65,17 @@ class PromptEngine(object):
 
         return prompt
 
+    def build_dialog(self):
+        temp_interactions = ""
+        if (self.dialog != []):
+            for interaction in self.dialog:
+                temp_interaction_text = self.config.input_prefix + interaction.input + self.config.input_postfix + self.config.newline_operator
+                temp_interaction_text += self.config.output_prefix +  interaction.response + self.config.output_postfix +  self.config.newline_operator*2
+
+                temp_interactions += temp_interaction_text
+
+        return temp_interactions
+
     def add_example(self, input: str, response: str):
         """
         Adds an interaction to the example
