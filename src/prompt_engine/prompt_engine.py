@@ -1,6 +1,7 @@
 from prompt_engine.interaction import Interaction
 from prompt_engine.model_config import ModelConfig
 from typing import List
+from prompt_engine.utils.encoder import Encoder, get_encoder
 
 class PromptEngineConfig: 
     """
@@ -31,6 +32,7 @@ class PromptEngine(object):
         self.examples = examples
         self.flow_reset_text = flow_reset_text
         self.dialog = dialog
+        self._encoder = get_encoder()
 
     def build_context(self, user_input: str = ""):
         """
@@ -190,9 +192,9 @@ class PromptEngine(object):
         """
         if context != None and user_input != None:
             if context != "":
-                num_tokens = len(context.split())
+                num_tokens = len(self._encoder.encode(context))
                 if user_input != "":
-                    num_tokens += len(user_input.split())
+                    num_tokens += len(self._encoder.encode(user_input))
                 if num_tokens > max_tokens:
                     return True
                 else:
