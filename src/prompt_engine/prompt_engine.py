@@ -62,10 +62,9 @@ class PromptEngine(object):
         """
         Builds the prompt from the parameters given to the Prompt Engine 
         """
-        context = ""
-        temp_prompt = self._insert_prompt(context, user_input)
-        context += self.build_context(temp_prompt)
-        prompt: str = self._insert_prompt(context, user_input)
+        formatted_input = self.format_input(user_input, newline_end)
+        prompt = self.build_context(formatted_input)
+        prompt += formatted_input
 
         return prompt
 
@@ -183,19 +182,17 @@ class PromptEngine(object):
         
         return context
     
-    def _insert_prompt(self, context: str = "", user_input: str = ""):
+    def format_input(self, user_input: str = "", newline_end: bool = True):
         """
         Inserts the prompt into the context
         """
+        temp_prompt_text = ""
         if (user_input != ""):
-            temp_prompt_text = self.config.input_prefix + user_input + self.config.input_postfix + self.config.newline_operator
+            temp_prompt_text += self.config.input_prefix + user_input + self.config.input_postfix
+            if (newline_end):
+                temp_prompt_text += self.config.newline_operator
 
-            if (self._assert_token_limit(context, temp_prompt_text, self.config.model_config.max_tokens)):
-                raise Exception("Token limit exceeded, reduce the number of examples or size of description. Alternatively, you may increase the max_tokens in ModelConfig")
-            
-            context += temp_prompt_text
-
-        return context
+        return temp_prompt_text
     
     def reset_context(self):
         self.dialog = []
