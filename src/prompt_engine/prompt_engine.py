@@ -41,20 +41,20 @@ class PromptEngine(object):
         context: str = ""
 
         # Add the description to the context
-        context = self._insert_description(context)
+        context = self._insert_description(context, user_input)
         
         # Add the examples to the context
-        context = self._insert_examples(context)
+        context = self._insert_examples(context, user_input)
         
         # Checks if the number of tokens after adding the examples in the context is greater than the max_tokens
         if (self.config.model_config != None and self._assert_token_limit(context, user_input, self.config.model_config.max_tokens)):
             raise Exception("Token limit exceeded, reduce the number of examples or size of description. Alternatively, you may increase the max_tokens in ModelConfig")
         
         # Add the flow reset text to the context
-        context = self._insert_flow_reset_text(context)
+        context = self._insert_flow_reset_text(context, user_input)
 
         # Add the interactions to the context
-        context = self._insert_interactions(context)
+        context = self._insert_interactions(context, user_input)
 
         return context
 
@@ -62,8 +62,10 @@ class PromptEngine(object):
         """
         Builds the prompt from the parameters given to the Prompt Engine 
         """
-        context = self.build_context(user_input)
-        prompt: str = context + self.config.input_prefix + user_input + self.config.input_postfix + self.config.newline_operator
+        context = ""
+        temp_prompt = self._insert_prompt(context, user_input)
+        context += self.build_context(temp_prompt)
+        prompt: str = self._insert_prompt(context, user_input)
 
         return prompt
 
@@ -136,7 +138,7 @@ class PromptEngine(object):
                 temp_example_text = self.config.input_prefix + example.input + self.config.input_postfix + self.config.newline_operator
                 temp_example_text += self.config.output_prefix +  example.response + self.config.output_postfix +  self.config.newline_operator*2
             
-                if (self._assert_token_limit(context + temp_example_text, user_input, self.config.model_config.max_tokens)):
+                if (self._assert_token_limit(context + temp_examples_text + temp_example_text, user_input, self.config.model_config.max_tokens)):
                     raise Exception("""Token limit exceeded, reduce the number of examples or size of description. Alternatively, you may increase the max_tokens in ModelConfig
                     It is highly recommended to lowering the number of examples to have more room for interactions""")
 
@@ -166,20 +168,33 @@ class PromptEngine(object):
         """
         Inserts the interactions into the context
         """
-        temp_interactions_list = []
+        temp_interactions_text = ""
         if (self.dialog != []):
             for interaction in self.dialog[::-1]:
                 temp_interaction_text = self.config.input_prefix + interaction.input + self.config.input_postfix + self.config.newline_operator
                 temp_interaction_text += self.config.output_prefix +  interaction.response + self.config.output_postfix +  self.config.newline_operator*2
 
-                if (self._assert_token_limit(context + temp_interaction_text, user_input, self.config.model_config.max_tokens)):
+                if (self._assert_token_limit(context + temp_interactions_text + temp_interaction_text, user_input, self.config.model_config.max_tokens)):
                     break
                 
-                temp_interactions_list.append(temp_interaction_text)
+                temp_interactions_text = temp_interaction_text + temp_interactions_text
 
-            if (len(temp_interactions_list) > 0):
-                context += "".join(temp_interactions_list[::-1])
+            context += temp_interactions_text
         
+        return context
+    
+    def _insert_prompt(self, context: str = "", user_input: str = ""):
+        """
+        Inserts the prompt into the context
+        """
+        if (user_input != ""):
+            temp_prompt_text = self.config.input_prefix + user_input + self.config.input_postfix + self.config.newline_operator
+
+            if (self._assert_token_limit(context, temp_prompt_text, self.config.model_config.max_tokens)):
+                raise Exception("Token limit exceeded, reduce the number of examples or size of description. Alternatively, you may increase the max_tokens in ModelConfig")
+            
+            context += temp_prompt_text
+
         return context
     
     def reset_context(self):
@@ -194,7 +209,7 @@ class PromptEngine(object):
             if context != "":
                 num_tokens = len(self._encoder.encode(context))
                 if user_input != "":
-                    num_tokens += len(self._encoder.encode(user_input))
+                    num_tokens = len(self._encoder.encode(context + user_input))
                 if num_tokens > max_tokens:
                     return True
                 else:
