@@ -175,6 +175,7 @@ The following are the functions available on the `PromptEngine` class and those 
 |--|--|--|--|
 | `build_context` | None | Constructs and return the context with parameters provided to the Prompt Engine | Context: string |
 | `build_prompt` | Prompt: string | Combines the context from `build_context` with a query to create a prompt | Prompt: string |
+| `build_dialog` | None | Builds a dialog based on all the past interactions added to the Prompt Engine | Dialog: string |
 | `add_example` | interaction: Interaction(input: string, response: string) | Adds the given example to the examples | None |
 | `add_interaction` | interaction: Interaction(input: string, response: string) | Adds the given interaction to the dialog | None |
 | `remove_first_interaction` | None | Removes and returns the first interaction in the dialog | Interaction: Interaction |

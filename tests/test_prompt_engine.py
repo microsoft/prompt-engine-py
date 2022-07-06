@@ -113,6 +113,15 @@ def test_pass_flow_reset_text():
     prompt_engine = PromptEngine(config, description, dialog=dialog, flow_reset_text=flow_reset_text, examples=examples)
     assert prompt_engine.build_context() == "### Trial Description\n\n## Hello\nprint('Hello')\n\n## Goodbye\nprint('Goodbye')\n\n### This is the flow reset text\n\n## Hi\nprint('Hi')\n\n## Bye\nprint('Bye')\n\n"
 
+def test_pass_remove_furthest_interaction():
+    config = PromptEngineConfig(model_config = ModelConfig(max_tokens=50), description_prefix = "###", input_prefix = "##", output_prefix = "")
+    description = "Trial Description"
+    examples = [Interaction("Hello", "print('Hello')"), Interaction("Goodbye", "print('Goodbye')")]
+    dialog = [Interaction("Hi", "print('Hi')"), Interaction("Bye", "print('Bye')")]
+    flow_reset_text = "This is the flow reset text"
+    prompt_engine = PromptEngine(config, description, dialog=dialog, flow_reset_text=flow_reset_text, examples=examples)
+    assert prompt_engine.build_prompt("This is great") == "### Trial Description\n\n## Hello\nprint('Hello')\n\n## Goodbye\nprint('Goodbye')\n\n### This is the flow reset text\n\n## Bye\nprint('Bye')\n\n## This is great\n"
+
 def test_pass_reset_context():
     config = PromptEngineConfig(description_prefix = "###", input_prefix = "##", output_prefix = "")
     description = "Trial Description"
