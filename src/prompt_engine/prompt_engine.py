@@ -32,7 +32,7 @@ class PromptEngine(object):
         self.examples = examples
         self.flow_reset_text = flow_reset_text
         self.dialog = dialog
-        self._encoder = get_encoder()
+        self.encoder = get_encoder()
 
     def build_context(self, user_input: str = ""):
         """
@@ -204,9 +204,9 @@ class PromptEngine(object):
         """
         if context != None and user_input != None:
             if context != "":
-                num_tokens = len(self._encoder.encode(context))
+                num_tokens = len(self.encoder.encode(context))
                 if user_input != "":
-                    num_tokens = len(self._encoder.encode(context + user_input))
+                    num_tokens = len(self.encoder.encode(context + user_input))
                 if num_tokens > max_tokens:
                     return True
                 else:
