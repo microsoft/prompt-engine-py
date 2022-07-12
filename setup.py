@@ -11,9 +11,9 @@ setuptools.setup(
     description="This package is a utility library for creating and maintaining prompts for Large Language Models (LLMs).",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/microsoft/prompt_engine_python",
+    url="https://github.com/microsoft/prompt-engine-py",
     project_urls={
-        "Bug Tracker": "https://github.com/microsoft/prompt_engine_python/issues",
+        "Bug Tracker": "https://github.com/microsoft/prompt-engine-py/issues",
     },
     classifiers=[
         "Programming Language :: Python :: 3",
