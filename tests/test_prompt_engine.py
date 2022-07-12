@@ -133,6 +133,16 @@ def test_pass_reset_context():
 
     assert prompt_engine.reset_context() == "### Trial Description\n\n## Hello\nprint('Hello')\n\n## Goodbye\nprint('Goodbye')\n\n"
 
+def test_pass_multi_turn_off():
+    config = PromptEngineConfig(description_prefix = "###", input_prefix = "##", output_prefix = "")
+    description = "Trial Description"
+    examples = [Interaction("Hello", "print('Hello')"), Interaction("Goodbye", "print('Goodbye')")]
+    prompt_engine = PromptEngine(config, description, examples=examples)
+
+    prompt_engine.add_interaction("Hi", "print('Hi')")
+
+    assert prompt_engine.build_prompt("Hello", multi_turn = False) == "### Trial Description\n\n## Hello\nprint('Hello')\n\n## Goodbye\nprint('Goodbye')\n\n## Hello\n"
+
 def test_pass_masterIntegrationTest():
     config = PromptEngineConfig(description_prefix = "###", input_prefix = "##", output_prefix = "")
     description = ""

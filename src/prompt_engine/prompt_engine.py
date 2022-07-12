@@ -34,7 +34,7 @@ class PromptEngine(object):
         self.dialog = dialog
         self.encoder = get_encoder()
 
-    def build_context(self, user_input: str = ""):
+    def build_context(self, user_input: str = "", multi_turn: bool = True):
         """
         Builds the context from the description, examples, and interactions.
         """
@@ -53,17 +53,18 @@ class PromptEngine(object):
         # Add the flow reset text to the context
         context = self._insert_flow_reset_text(context, user_input)
 
-        # Add the interactions to the context
-        context = self._insert_interactions(context, user_input)
+        if multi_turn:
+            # Add the interactions to the context
+            context = self._insert_interactions(context, user_input)
 
         return context
 
-    def build_prompt(self, user_input: str, newline_end: bool = True):
+    def build_prompt(self, user_input: str, multi_turn: bool = True, newline_end: bool = True):
         """
         Builds the prompt from the parameters given to the Prompt Engine 
         """
         formatted_input = self.format_input(user_input, newline_end)
-        prompt = self.build_context(formatted_input)
+        prompt = self.build_context(formatted_input, multi_turn)
         prompt += formatted_input
 
         return prompt
