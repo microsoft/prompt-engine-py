@@ -105,7 +105,7 @@ console.log(1018 * (4 ** 9))
 /* How about the 8th power? */
 ```
 
-With this context, the code generation model has the dialog context needed to understand what we mean by the query. In this case, the model would correctly generate `print(1018 * (4 ** 9))`.
+With this context, the code generation model has the dialog context needed to understand what we mean by the query. In this case, the model would correctly generate `print(1018 * (4 ** 8))`.
 
 ### Chat Engine
 
