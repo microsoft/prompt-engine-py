@@ -55,13 +55,7 @@ code_engine = CodeEngine(config = javascript_config, description = description, 
 
 ```
 
-With our description and our examples, we can go ahead and create our `CodeEngine`:
-
-```py
-code_engine = CodeEngine(description = description, examples = examples)
-```
-
-Now that we have our `CodeEngine`, we can use it to create prompts:
+With our description and our examples, we can use it to create prompts:
 
 ```py
 query = "What's 1018 times the ninth power of four?"
