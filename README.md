@@ -70,7 +70,7 @@ prompt = code_engine.build_prompt(query)
 
 The resulting prompt will be a string with the description, examples and the latest query formatted with comment operators and line breaks:
 
-```py
+```js
 /*/ Natural Language Commands to JavaScript Math Code. The code should log the result of the command to the console. /*/
 
 /* what's 10 plus 18 */
@@ -103,7 +103,7 @@ code_engine.build_prompt("How about the 8th power?")
 
 Produces a prompt identical to the one above, but with the NL->Code dialog history:
 
-```py
+```js
 ...
 /* What's 1018 times the ninth power of four? */
 console.log(1018 * (4 ** 9))
