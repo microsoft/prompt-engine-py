@@ -41,8 +41,8 @@ NL->Code prompts should also have examples of NL->Code interactions, exemplifyin
 ```py
 from prompt_engine.interaction import Interaction
 examples = [
-  Interaction("what's 10 plus 18", "print(10 + 18)"),
-  Interaction("what's 10 times 18", "print(10 * 18)")
+  Interaction("what's 10 plus 18", "console.log(10 + 18)"),
+  Interaction("what's 10 times 18", "console.log(10 * 18)")
 ]
 ```
 
@@ -71,15 +71,15 @@ prompt = code_engine.build_prompt(query)
 The resulting prompt will be a string with the description, examples and the latest query formatted with comment operators and line breaks:
 
 ```py
-### Natural Language Commands to JavaScript Math Code. The code should log the result of the command to the console.
+/*/ Natural Language Commands to JavaScript Math Code. The code should log the result of the command to the console. /*/
 
-# what's 10 plus 18
-print(10 + 18)
+/* what's 10 plus 18 */
+console.log(10 + 18)
 
-# what's 10 times 18
-print(10 * 18)
+/* what's 10 times 18 */
+console.log(10 * 18)
 
-# What's 1018 times the ninth power of four? */
+/* What's 1018 times the ninth power of four? */
 ```
 
 Given the context, a capable code generation model can take the above prompt and guess the next line: `print(1018 * (4 ** 9))`.
@@ -105,10 +105,10 @@ Produces a prompt identical to the one above, but with the NL->Code dialog histo
 
 ```py
 ...
-# What's 1018 times the ninth power of four?
-print(1018 * (4 ** 9))
+/* What's 1018 times the ninth power of four? */
+console.log(1018 * (4 ** 9))
 
-# How about the 8th power?
+/* How about the 8th power? */
 ```
 
 With this context, the code generation model has the dialog context needed to understand what we mean by the query. In this case, the model would correctly generate `print(1018 * (4 ** 9))`.
