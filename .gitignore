@@ -4,3 +4,4 @@ tests/__pycache__
 src/prompt_engine.egg-info
 .pytest_cache
 src/prompt_engine/utils/__pycache__
+src/prompt_engine_py.egg-info
