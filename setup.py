@@ -4,7 +4,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="prompt-engine",
+    name="prompt-engine-py",
     version="0.0.1",
     author="Abhishek Masand",
     author_email="amasand@microsoft.com",
