@@ -1,6 +1,6 @@
 from prompt_engine.code_engine import PromptEngine
 
-prompt_engine = PromptEngine(yaml_file=r'C:\Users\amasand\Downloads\Github\prompt-engine-python\examples\test.yaml')
+prompt_engine = PromptEngine(yaml_file='test.yaml')
 
 print (prompt_engine.build_context())
 
