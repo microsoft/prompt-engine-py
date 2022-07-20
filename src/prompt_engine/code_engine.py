@@ -31,5 +31,24 @@ class CodeEngine(PromptEngine):
     """
     Code Engine provides a PromptEngine to construct nl-to-code prompts for large scale language model inference
     """
-    def __init__(self, config: CodeEngineConfig = PythonCodeEngineConfig(), description: str = "", examples: list = [], flow_reset_text = "", dialog: list = []):
-        super().__init__(config = config, description = description, examples = examples, flow_reset_text = flow_reset_text, dialog = dialog)
+    def __init__(self, config: CodeEngineConfig = PythonCodeEngineConfig(), description: str = "", examples: list = [], flow_reset_text = "", dialog: list = [], yaml_file: str = None):
+        super().__init__(config = config, description = description, examples = examples, flow_reset_text = flow_reset_text, dialog = dialog, yaml_file = yaml_file)
+
+    def _load_config_yaml(self, yaml_data):
+        """
+        Adds the engine yaml config to the prompt engine
+        """
+
+        if yaml_data["type"] == "code-engine":
+            if "config" in yaml_data:
+                config_data = yaml_data["config"]
+                if "model_config" in config_data:
+                    self.model_config = ModelConfig(**config_data["model_config"])
+                    config_data.pop("model_config")
+                    self.config = CodeEngineConfig(model_config = self.model_config, **config_data)
+                else:
+                    self.config = CodeEngineConfig(**config_data)
+            else:
+                self.config = CodeEngineConfig()
+        else:
+            raise Exception("Invalid yaml file type")
