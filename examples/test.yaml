@@ -3,7 +3,7 @@ config:
   model_config:
     max_tokens: 1024
   description_prefix: ">>"
-  description_postfix: "!"
+  description_postfix: ""
   newline_operator: "\n"
   input_prefix: "Human:"
   input_postfix: ""
