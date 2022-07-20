@@ -7,7 +7,7 @@ print (prompt_engine.build_context())
 """
 Output of this example is:
 
-Hello This is the description !
+>> What is the possibility of an event happening? !
 
 > Roam around Mars
 This will be possible in a couple years
@@ -15,7 +15,7 @@ This will be possible in a couple years
 > Drive a car
 This is possible after you get a learner drivers license
 
-Hello This is the flow reset text !
+>> Starting a new conversation !
 
 > Drink water
 Uhm...You don't do that 8 times a day?
