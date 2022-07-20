@@ -5,9 +5,9 @@ config:
   description_prefix: ">>"
   description_postfix: "!"
   newline_operator: "\n"
-  input_prefix: ">"
+  input_prefix: "Human:"
   input_postfix: ""
-  output_prefix: ""
+  output_prefix: "Bot:"
   output_postfix: ""
 description: "What is the possibility of an event happening?"
 examples:
