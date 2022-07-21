@@ -27,25 +27,21 @@ class PromptEngine(object):
     """
     Prompt Engine provides a reusable interface for the developer to construct prompts for large scale language model inference
     """
-    def __init__(self, config: PromptEngineConfig = PromptEngineConfig(), description: str = "", examples: List[Interaction] = [], flow_reset_text: str = "", dialog: List[Interaction] = [], yaml_file: str = None):
+    def __init__(self, config: PromptEngineConfig = PromptEngineConfig(), description: str = "", examples: List[Interaction] = [], flow_reset_text: str = "", dialog: List[Interaction] = []):
         
-        if (yaml_file is not None):
-            self.load_yaml(yaml_file)
-        else:
-            self.config = config
-            self.description = description
-            self.examples = examples
-            self.flow_reset_text = flow_reset_text
-            self.dialog = dialog
+        self.config = config
+        self.description = description
+        self.examples = examples
+        self.flow_reset_text = flow_reset_text
+        self.dialog = dialog
         self.encoder = get_encoder()
 
-    def load_yaml(self, yaml_file):
+    def load_yaml(self, yaml_config: str):
         """
         Loads the yaml file and initializes the Prompt Engine
         """
 
-        data = open(yaml_file, "r").read()
-        yaml_data = yaml.load(data, Loader=yaml.FullLoader)
+        yaml_data = yaml.load(yaml_config, Loader=yaml.FullLoader)
         
         if "type" in yaml_data:
             self._load_config_yaml(yaml_data)
@@ -62,8 +58,8 @@ class PromptEngine(object):
         else:
             self.examples = []
 
-        if "flow_reset_text" in yaml_data:
-            self.flow_reset_text = yaml_data["flow_reset_text"]
+        if "flow-reset-text" in yaml_data:
+            self.flow_reset_text = yaml_data["flow-reset-text"]
         else:
             self.flow_reset_text = ""
 
@@ -80,8 +76,10 @@ class PromptEngine(object):
         if yaml_data["type"] == "prompt-engine":
             if "config" in yaml_data:
                 config_data = yaml_data["config"]
+                config_data = {k.replace('-', '_'): v for k, v in config_data.items()}
                 if "model_config" in config_data:
-                    self.model_config = ModelConfig(**config_data["model_config"])
+                    model_config_data = {k.replace('-', '_'): v for k, v in config_data["model_config"].items()}
+                    self.model_config = ModelConfig(**model_config_data)
                     config_data.pop("model_config")
                     self.config = PromptEngineConfig(model_config = self.model_config, **config_data)
                 else:

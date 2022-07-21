@@ -1,21 +1,16 @@
-type: prompt-engine
+type: chat-engine
 config:
-  model_config:
-    max_tokens: 1024
-  description_prefix: ">>"
-  description_postfix: ""
-  newline_operator: "\n"
-  input_prefix: "Human:"
-  input_postfix: ""
-  output_prefix: "Bot:"
-  output_postfix: ""
+  model-config:
+    max-tokens: 1024
+  user-name: "Abhishek"
+  bot-name: "Bot"
 description: "What is the possibility of an event happening?"
 examples:
   - input: "Roam around Mars"
     response: "This will be possible in a couple years"
   - input: "Drive a car"
     response: "This is possible after you get a learner drivers license"
-flow_reset_text: "Starting a new conversation"
+flow-reset-text: "Starting a new conversation"
 dialog:
   - input: "Drink water"
     response: "Uhm...You don't do that 8 times a day?"
