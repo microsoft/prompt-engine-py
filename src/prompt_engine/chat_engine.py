@@ -15,8 +15,8 @@ class ChatEngine(PromptEngine):
     """
     Chat Engine provides a PromptEngine to construct chat-like prompts for large scale language model inference
     """
-    def __init__(self, config: ChatEngineConfig = ChatEngineConfig(), description: str = "", examples: list = [], flow_reset_text = "", dialog: list = [], yaml_file: str = None):
-        super().__init__(config = config, description = description, examples = examples, flow_reset_text = flow_reset_text, dialog = dialog, yaml_file = yaml_file)
+    def __init__(self, config: ChatEngineConfig = ChatEngineConfig(), description: str = "", examples: list = [], flow_reset_text = "", dialog: list = []):
+        super().__init__(config = config, description = description, examples = examples, flow_reset_text = flow_reset_text, dialog = dialog)
     
     def _load_config_yaml(self, yaml_data):
         """
@@ -26,8 +26,10 @@ class ChatEngine(PromptEngine):
         if yaml_data["type"] == "chat-engine":
             if "config" in yaml_data:
                 config_data = yaml_data["config"]
+                config_data = {k.replace('-', '_'): v for k, v in config_data.items()}
                 if "model_config" in config_data:
-                    self.model_config = ModelConfig(**config_data["model_config"])
+                    model_config_data = {k.replace('-', '_'): v for k, v in config_data["model_config"].items()}
+                    self.model_config = ModelConfig(**model_config_data)
                     config_data.pop("model_config")
                     self.config = ChatEngineConfig(model_config = self.model_config, **config_data)
                 else:
