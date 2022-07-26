@@ -1,6 +1,7 @@
 from prompt_engine.prompt_engine import PromptEngine, PromptEngineConfig
 from prompt_engine.model_config import ModelConfig
 from prompt_engine.interaction import Interaction
+import yaml
 
 class ChatEngineConfig(PromptEngineConfig):
     """
@@ -38,3 +39,18 @@ class ChatEngine(PromptEngine):
                 self.config = ChatEngineConfig()
         else:
             raise Exception("Invalid yaml file type")
+
+    def save_yaml(self):
+    
+        yaml_data = {}
+        yaml_data['type'] = "chat-engine"
+        yaml_data['description'] = self.description
+        yaml_data['examples'] = [{'input': example.input, 'response': example.response} for example in self.examples]
+        yaml_data['flow-reset-text'] = self.flow_reset_text
+        yaml_data['dialog'] = [{'input': interaction.input, 'response': interaction.response} for interaction in self.dialog]
+        yaml_data['config'] = {
+            'model_config': {k: v for k, v in self.config.model_config.__dict__.items() if v != None},
+            'user_name': self.config.input_prefix[:-2], # remove the colon and space
+            'bot_name': self.config.output_prefix[:-2] # remove the colon and space
+        }
+        return yaml.dump(yaml_data, default_flow_style=False)

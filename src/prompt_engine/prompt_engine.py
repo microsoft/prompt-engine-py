@@ -88,6 +88,27 @@ class PromptEngine(object):
                 self.config = PromptEngineConfig()
         else:
             raise Exception("Invalid yaml file type")
+
+    def save_yaml(self):
+
+        yaml_data = {}
+        yaml_data['type'] = "prompt-engine"
+        yaml_data['description'] = self.description
+        yaml_data['examples'] = [{'input': example.input, 'response': example.response} for example in self.examples]
+        yaml_data['flow-reset-text'] = self.flow_reset_text
+        yaml_data['dialog'] = [{'input': interaction.input, 'response': interaction.response} for interaction in self.dialog]
+        yaml_data['config'] = {
+            'model_config': {k: v for k, v in self.config.model_config.__dict__.items() if v != None},
+            'description_prefix': self.config.description_prefix,
+            'description_postfix': self.config.description_postfix,
+            'input_prefix': self.config.input_prefix,
+            'input_postfix': self.config.input_postfix,
+            'output_prefix': self.config.output_prefix,
+            'output_postfix': self.config.output_postfix,
+            'newline_operator': self.config.newline_operator
+        }
+
+        return yaml.dump(yaml_data, default_flow_style=False)
     
 
     def build_context(self, user_input: str = "", multi_turn: bool = True):
