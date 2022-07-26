@@ -66,13 +66,13 @@ class CodeEngine(PromptEngine):
         yaml_data['dialog'] = [{'input': interaction.input, 'response': interaction.response} for interaction in self.dialog]
         yaml_data['config'] = {
             'model_config': {k: v for k, v in self.config.model_config.__dict__.items() if v != None},
-            'description_comment_operator': self.config.description_prefix,
-            'description_comment_close_operator': self.config.description_postfix,
+            'description_comment_operator': self.config.description_prefix[:-1],
+            'description_comment_close_operator': self.config.description_postfix[1:],
             'newline_operator': self.config.newline_operator,
-            'comment_operator': self.config.input_prefix,
-            'comment_close_operator': self.config.input_postfix,
-            'code_operator': self.config.output_prefix,
-            'code_close_operator': self.config.output_postfix
+            'comment_operator': self.config.input_prefix[:-1],
+            'comment_close_operator': self.config.input_postfix[1:],
+            'code_operator': self.config.output_prefix[:-1],
+            'code_close_operator': self.config.output_postfix[1:]
         }
 
         return yaml.dump(yaml_data, default_flow_style=False)

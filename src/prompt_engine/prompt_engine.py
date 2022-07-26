@@ -99,12 +99,12 @@ class PromptEngine(object):
         yaml_data['dialog'] = [{'input': interaction.input, 'response': interaction.response} for interaction in self.dialog]
         yaml_data['config'] = {
             'model_config': {k: v for k, v in self.config.model_config.__dict__.items() if v != None},
-            'description_prefix': self.config.description_prefix,
-            'description_postfix': self.config.description_postfix,
-            'input_prefix': self.config.input_prefix,
-            'input_postfix': self.config.input_postfix,
-            'output_prefix': self.config.output_prefix,
-            'output_postfix': self.config.output_postfix,
+            'description_prefix': self.config.description_prefix[:-1],
+            'description_postfix': self.config.description_postfix[1:],
+            'input_prefix': self.config.input_prefix[:-1],
+            'input_postfix': self.config.input_postfix[1:],
+            'output_prefix': self.config.output_prefix[:-1],
+            'output_postfix': self.config.output_postfix[1:],
             'newline_operator': self.config.newline_operator
         }
 
