@@ -154,6 +154,14 @@ When passed to a large language model (e.g. GPT-3), the context of the above pro
 chatEngine.add_interaction(user_query, "Subatomic particles at some level, but somehow I don't think that's what you were asking.")
 ```
 
+### Dynamic Prompt Engine
+
+Dynamic Prompt Engine is another behaviour constructed on top of prompt engine that enables dynamic retrieval of the relevant examples in order to generate a prompt. 
+
+It is developed with the belief that giving more relevant examples to the Large Language Model will enable it to generate a better output and much closer to our examples, rather than leaving it to guess for itself. This also allows the ability to coax multiple behaviours out of the Large Language Model instead of having to maintain mutliple different prompts. 
+
+The dynamic prompt engine maintains a prompt bank, which is a collection of embeddings of all the examples and interactions that have been provided to it. When given a new unseen prompt, it queries the prompt bank based on the embeddings to retrieve the Top-k relevant examples and adds them to the examples section of the prompt engine output. 
+
 ## Managing Prompt Overflow
 
 Prompts for Large Language Models generally have limited size, depending on the language model being used. Given that prompt-engine can persist dialog history, it is possible for dialogs to get so long that the prompt overflows. The Prompt Engine pattern handles this situation by removing the oldest dialog interaction from the prompt, effectively only remembering the most recent interactions.
