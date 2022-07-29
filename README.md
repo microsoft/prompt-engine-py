@@ -162,6 +162,9 @@ It is developed with the belief that giving more relevant examples to the Large 
 
 The dynamic prompt engine maintains a prompt bank, which is a collection of embeddings of all the examples and interactions that have been provided to it. When given a new unseen prompt, it queries the prompt bank based on the embeddings to retrieve the Top-k relevant examples and adds them to the examples section of the prompt engine output. 
 
+<img width="600" alt="image" src="https://user-images.githubusercontent.com/17247257/181765992-5a645f56-e463-4c96-98c9-814efd1b8a17.png">
+
+
 ## Managing Prompt Overflow
 
 Prompts for Large Language Models generally have limited size, depending on the language model being used. Given that prompt-engine can persist dialog history, it is possible for dialogs to get so long that the prompt overflows. The Prompt Engine pattern handles this situation by removing the oldest dialog interaction from the prompt, effectively only remembering the most recent interactions.
