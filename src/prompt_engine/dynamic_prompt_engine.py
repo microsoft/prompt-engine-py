@@ -41,7 +41,7 @@ class OpenAIEmbedding:
         with open(self.cache_path, "wb") as embedding_cache_file:
             pickle.dump(self.embedding_cache, embedding_cache_file)
     
-    def embedding_from_string(self, string: str, example: Interaction = None, engine: str = "text-similarity-davinci-001", embedding_cache=None):
+    def embedding_from_string(self, string: str, example: Interaction = None, engine: str = "text-similarity-davinci-001", embedding_cache=None, query = False):
         """Return embedding of given string, using a cache to avoid recomputing."""
         
         # Make a temp Interaction object to get its embedding while building a prompt
@@ -53,13 +53,46 @@ class OpenAIEmbedding:
             embedding_cache = self.embedding_cache
 
         # if the embedding is already in the cache, return it, otherwise compute it
-        if (string, engine) not in embedding_cache.keys() or embedding_cache[(string, engine)][1].response == "":
+        if (string, engine) not in embedding_cache.keys() or (embedding_cache[(string, engine)][1].response == "" and query == False):
             print (f"Computing embedding for unseen interaction!")
-            embedding_cache[(string, engine)] = [get_embedding(string, engine), example]
-            with open(self.cache_path, "wb") as embedding_cache_file:
-                pickle.dump(embedding_cache, embedding_cache_file)
+            success, embedding = self.get_embedding_with_retries(string, engine)
+            if success:
+                embedding_cache[(string, engine)] = [embedding, example]
+                with open(self.cache_path, "wb") as embedding_cache_file:
+                    pickle.dump(embedding_cache, embedding_cache_file)
 
-        return embedding_cache[(string, engine)]
+                return embedding_cache[(string, engine)]
+            else:
+                return None
+        
+        else:
+            return embedding_cache[(string, engine)]
+
+    def get_embedding_with_retries(self, text, engine, retries = 3):
+        """
+        This function is used to get the embedding of a string from OpenAI. It is used to handle the case where the API is rate limited.
+        """
+        try:
+            if retries > 0:
+                return True, get_embedding(text, engine)
+        except openai.error.RateLimitError:
+            if retries > 0:
+                return self.get_embedding_with_retries(text, engine, retries - 1)
+            else:
+                print('\n\n# OpenAI API error: Rate limit exceeded, try later')
+                return False, None
+        except openai.error.APIConnectionError:
+            if retries > 0:
+                return self.get_embedding_with_retries(text, engine, retries - 1)
+            else:
+                print('\n\n# OpenAI API error: API connection error, are you connected to the internet?')
+                return False, None
+        except openai.error.InvalidRequestError as e:
+            print('\n\n# OpenAI API error: Invalid request - ' + str(e))
+            return False, None
+        except Exception as e:
+            print('\n\n# OpenAI API error: Unexpected exception - ' + str(e))
+            return False, None
 
     def get_recommendations_from_strings(self, source_string: int, k_nearest_neighbors: int = 3, engine="text-similarity-davinci-001"):
         """Print out the k nearest neighbors of a given string."""
@@ -70,7 +103,9 @@ class OpenAIEmbedding:
         embeddings:List[List] = [em[0] for em in all_embeddings_except_empty]
 
         # get the embedding of the source string
-        query_embedding = self.embedding_from_string(source_string, Interaction(input=source_string, response=""), engine=engine)[0]
+        query_embedding = self.embedding_from_string(source_string, Interaction(input=source_string, response=""), engine=engine, query=True)[0]
+        if query_embedding is None:
+            raise Exception("Could not get embedding for source string, please try again")
 
         # get distances between the source embedding and other embeddings (function from embeddings_utils.py)
         distances = distances_from_embeddings(query_embedding, embeddings, distance_metric="cosine")
@@ -161,7 +196,9 @@ class DynamicPromptEngine(PromptEngine):
         # A single embedding is a combination of the main description of the task and the natural language input of the example
         for example in examples:
             processed_example = self.preprocess_for_embedding_computation(description, example.input)
-            self.prompt_bank.openaiservice.embedding_from_string(processed_example, example, engine="text-similarity-davinci-001", embedding_cache=self.prompt_bank.openaiservice.embedding_cache)
+            embedding = self.prompt_bank.openaiservice.embedding_from_string(processed_example, example, engine="text-similarity-davinci-001", embedding_cache=self.prompt_bank.openaiservice.embedding_cache)
+            if embedding is None:
+                raise Exception("Could not get embedding for example, please try again")
 
     def preprocess_for_embedding_computation(self, description, user_input):
         """
