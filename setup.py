@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="prompt-engine-py",
-    version="0.0.1",
+    version="0.0.2",
     author="Abhishek Masand",
     author_email="amasand@microsoft.com",
     description="This package is a utility library for creating and maintaining prompts for Large Language Models (LLMs).",
