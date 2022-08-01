@@ -1,6 +1,7 @@
 from prompt_engine.prompt_engine import PromptEngine, PromptEngineConfig
 from prompt_engine.model_config import ModelConfig
 from prompt_engine.interaction import Interaction
+import yaml
 
 class CodeEngineConfig(PromptEngineConfig):
     def __init__(self, model_config: ModelConfig = ModelConfig(max_tokens=1024), description_comment_operator: str = "###", description_comment_close_operator: str = "", newline_operator: str = "\n",
@@ -54,3 +55,24 @@ class CodeEngine(PromptEngine):
                 self.config = CodeEngineConfig()
         else:
             raise Exception("Invalid yaml file type")
+
+    def save_yaml(self):
+    
+        yaml_data = {}
+        yaml_data['type'] = "code-engine"
+        yaml_data['description'] = self.description
+        yaml_data['examples'] = [{'input': example.input, 'response': example.response} for example in self.examples]
+        yaml_data['flow-reset-text'] = self.flow_reset_text
+        yaml_data['dialog'] = [{'input': interaction.input, 'response': interaction.response} for interaction in self.dialog]
+        yaml_data['config'] = {
+            'model_config': {k: v for k, v in self.config.model_config.__dict__.items() if v != None},
+            'description_comment_operator': self.config.description_prefix[:-1],
+            'description_comment_close_operator': self.config.description_postfix[1:],
+            'newline_operator': self.config.newline_operator,
+            'comment_operator': self.config.input_prefix[:-1],
+            'comment_close_operator': self.config.input_postfix[1:],
+            'code_operator': self.config.output_prefix[:-1],
+            'code_close_operator': self.config.output_postfix[1:]
+        }
+
+        return yaml.dump(yaml_data, default_flow_style=False)
