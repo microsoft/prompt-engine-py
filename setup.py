@@ -22,6 +22,14 @@ setuptools.setup(
     ],
     package_dir={"": "src"},
     packages=setuptools.find_packages(where="src"),
-    python_requires=">=3.6",
+    install_requires=[
+          'pyyaml',
+          'regex',
+          'matplotlib',
+          'plotly',
+          'scipy',
+          'scikit-learn',
+      ],
+    python_requires=">=3.6, <3.12",
     package_data={'prompt_engine': ['utils/encoder.json', 'utils/vocab.bpe']},
 )
