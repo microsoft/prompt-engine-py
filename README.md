@@ -12,7 +12,7 @@ See [How to get Codex to produce the code you want](https://microsoft.github.io/
 
 ## Installation
 
-`pip install prompt-engine-py`
+`pip install prompt-engine-py regex pyyaml`
 
 ## Usage
 
